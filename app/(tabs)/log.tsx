@@ -228,7 +228,7 @@ export default function LogScreen() {
             textAlign: 'center',
             fontFamily: Fonts.rounded,
           }}>
-          "みんな、今日も自分なりに頑張っています。"
+          &quot;みんな、今日も自分なりに頑張っています。&quot;
         </Text>
         <View style={{ flexDirection: 'row', gap: 6 }}>
           <View style={{ width: 6, height: 6, borderRadius: 999, backgroundColor: 'rgba(255, 170, 184, 0.4)' }} />
