@@ -2,21 +2,33 @@ import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 
-const MOODS = [
+const MOODS: {
+  id: string;
+  label: string;
+  color: string;
+  text: string;
+  icon: IconSymbolName;
+}[] = [
   { id: 'great', label: '絶好調', color: '#A8DF8E', text: '#FFFFFF', icon: 'sun.max.fill' },
   { id: 'ok', label: '普通', color: '#FFFFFF', text: '#141712', icon: 'sparkles' },
   { id: 'meh', label: 'もやもや', color: '#FFD8DF', text: '#8B3D48', icon: 'cloud.fill' },
   { id: 'tough', label: 'つらい', color: '#FFAAB8', text: '#FFFFFF', icon: 'heart.fill' },
 ];
 
-const BODY_STATES = [
-  { id: 'light', label: '軽い', color: '#FFFFFF', text: '#141712', icon: 'feather' },
+const BODY_STATES: {
+  id: string;
+  label: string;
+  color: string;
+  text: string;
+  icon: IconSymbolName;
+}[] = [
+  { id: 'light', label: '軽い', color: '#FFFFFF', text: '#141712', icon: 'wind' },
   { id: 'normal', label: 'ふつう', color: '#E9F7E2', text: '#2E5B2E', icon: 'figure.walk' },
-  { id: 'tired', label: 'だるい', color: '#FFE9C7', text: '#7A4E00', icon: 'zzz' },
-  { id: 'pain', label: '痛い', color: '#FFAAB8', text: '#FFFFFF', icon: 'cross.case.fill' },
+  { id: 'tired', label: 'だるい', color: '#FFE9C7', text: '#7A4E00', icon: 'moon.stars.fill' },
+  { id: 'pain', label: '痛い', color: '#FFAAB8', text: '#FFFFFF', icon: 'heart.circle.fill' },
 ];
 
 export default function DailyMoodScreen() {
