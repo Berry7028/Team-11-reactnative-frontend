@@ -23,10 +23,12 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
       }}>
       <Tabs.Screen
-        name="index"
+        name="log"
         options={{
-          title: 'ホーム',
-          tabBarIcon: ({ color }) => <IconSymbol size={26} name="house.fill" color={color} />,
+          title: 'ログ',
+          tabBarIcon: ({ color }) => <IconSymbol size={26} name="book.closed.fill" color={color} />,
+          headerStyle: { backgroundColor: '#F7FCF0' },
+          headerTitleStyle: { color: '#141712' },
         }}
       />
       <Tabs.Screen
@@ -41,12 +43,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="log"
+        name="index"
         options={{
-          title: 'ログ',
-          tabBarIcon: ({ color }) => <IconSymbol size={26} name="book.closed.fill" color={color} />,
-          headerStyle: { backgroundColor: '#F7FCF0' },
-          headerTitleStyle: { color: '#141712' },
+          title: 'ホーム',
+          tabBarIcon: ({ color }) => <IconSymbol size={26} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
