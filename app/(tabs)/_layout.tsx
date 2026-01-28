@@ -35,12 +35,14 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="log"
         options={{
-          title: "ホーム",
+          title: "ログ",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="house.fill" color={color} />
+            <IconSymbol size={26} name="book.closed.fill" color={color} />
           ),
+          headerStyle: { backgroundColor: "#F7FCF0" },
+          headerTitleStyle: { color: "#141712" },
         }}
       />
       <Tabs.Screen
@@ -55,14 +57,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="log"
+        name="index"
         options={{
-          title: "ログ",
+          title: "ホーム",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="book.closed.fill" color={color} />
+            <IconSymbol size={36} name="house.fill" color={color} />
           ),
-          headerStyle: { backgroundColor: "#F7FCF0" },
-          headerTitleStyle: { color: "#141712" },
+          tabBarItemStyle: {
+            marginTop: -4,
+          },
         }}
       />
       <Tabs.Screen
@@ -77,14 +80,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="daily-review"
+        name="settings"
         options={{
-          title: "ふりかえり",
+          title: "設定",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="moon.stars.fill" color={color} />
+            <IconSymbol size={26} name="gearshape.fill" color={color} />
           ),
           headerStyle: { backgroundColor: "#F0FFDF" },
-          headerTitleStyle: { color: "#334155" },
+          headerTitleStyle: { color: "#141712" },
+        }}
+      />
+      <Tabs.Screen
+        name="daily-review"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

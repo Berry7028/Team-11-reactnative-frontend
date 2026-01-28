@@ -1,18 +1,21 @@
 import { Image } from 'expo-image';
-import React from 'react';
-import { Keyboard, Pressable, ScrollView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useState } from 'react';
+import { Keyboard, Pressable, ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native';
 
+import { MoodInputSection } from '@/components/mood-input-section';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 
 const DAY_MOODS = [
-  { id: 'calm', label: '穏やか', icon: 'sparkles', accent: '#A8DF8E' },
-  { id: 'full', label: '充実', icon: 'sun.max.fill', accent: '#A8DF8E', filled: true },
-  { id: 'tired', label: 'お疲れ', icon: 'cup.and.saucer.fill', accent: '#F59E0B' },
-  { id: 'cloudy', label: 'もやもや', icon: 'cloud.fill', accent: '#60A5FA' },
+  { id: 'calm', label: '穏やか', icon: 'sparkles' as const, accent: '#A8DF8E' },
+  { id: 'full', label: '充実', icon: 'sun.max.fill' as const, accent: '#A8DF8E' },
+  { id: 'tired', label: 'お疲れ', icon: 'cup.and.saucer.fill' as const, accent: '#F59E0B' },
+  { id: 'cloudy', label: 'もやもや', icon: 'cloud.fill' as const, accent: '#60A5FA' },
 ];
 
 export default function DailyReviewScreen() {
+  const [selectedDayMoodId, setSelectedDayMoodId] = useState<string | null>(null);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView
@@ -56,65 +59,47 @@ export default function DailyReviewScreen() {
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}>
-          {DAY_MOODS.map((mood) => (
-            <View
-              key={mood.id}
-              style={{
-                height: 44,
-                paddingHorizontal: 16,
-                borderRadius: 999,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 8,
-                backgroundColor: mood.filled ? '#A8DF8E' : '#FFFFFF',
-                borderWidth: mood.filled ? 0 : 2,
-                borderColor: 'rgba(168, 223, 142, 0.3)',
-                boxShadow: mood.filled
-                  ? '0 6px 12px rgba(168, 223, 142, 0.4)'
-                  : '0 4px 10px rgba(168, 223, 142, 0.15)',
-              }}>
-              <IconSymbol name={mood.icon} size={18} color={mood.filled ? '#FFFFFF' : mood.accent} />
-              <Text
-                selectable
+          {DAY_MOODS.map((mood) => {
+            const isSelected = selectedDayMoodId === mood.id;
+            return (
+              <Pressable
+                key={mood.id}
+                onPress={() => setSelectedDayMoodId(mood.id)}
                 style={{
-                  fontSize: 12,
-                  fontWeight: '700',
-                  color: mood.filled ? '#FFFFFF' : '#475569',
-                  fontFamily: Fonts.rounded,
+                  height: 44,
+                  paddingHorizontal: 16,
+                  borderRadius: 999,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 8,
+                  backgroundColor: isSelected ? '#A8DF8E' : '#FFFFFF',
+                  borderWidth: isSelected ? 0 : 2,
+                  borderColor: 'rgba(168, 223, 142, 0.3)',
+                  boxShadow: isSelected
+                    ? '0 6px 12px rgba(168, 223, 142, 0.4)'
+                    : '0 4px 10px rgba(168, 223, 142, 0.15)',
                 }}>
-                {mood.label}
-              </Text>
-            </View>
-          ))}
+                <IconSymbol name={mood.icon} size={18} color={isSelected ? '#FFFFFF' : mood.accent} />
+                <Text
+                  selectable
+                  style={{
+                    fontSize: 12,
+                    fontWeight: '700',
+                    color: isSelected ? '#FFFFFF' : '#475569',
+                    fontFamily: Fonts.rounded,
+                  }}>
+                  {mood.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </ScrollView>
 
-        <View style={{ paddingHorizontal: 20, gap: 12 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <IconSymbol name="pencil" size={20} color="#FFAAB8" />
-            <Text
-              selectable
-              style={{ fontSize: 16, fontWeight: '700', color: '#334155', fontFamily: Fonts.rounded }}>
-              自由入力
-            </Text>
-          </View>
-          <TextInput
-            multiline
-            placeholder="今日あったことや、今の気持ちを全部吐き出してみてね..."
-            placeholderTextColor="#94A3B8"
-            style={{
-              minHeight: 180,
-              borderRadius: 24,
-              backgroundColor: '#FFFFFF',
-              padding: 18,
-              fontSize: 14,
-              color: '#1E293B',
-              textAlignVertical: 'top',
-              boxShadow: '0 8px 18px rgba(168, 223, 142, 0.2)',
-              borderCurve: 'continuous',
-              fontFamily: Fonts.rounded,
-            }}
-          />
-        </View>
+        <MoodInputSection
+          placeholder="今日あったことや、今の気持ちを全部吐き出してみてね..."
+          showMoodSelector={false}
+          showBodySelector={false}
+        />
 
         <View style={{ paddingHorizontal: 20, gap: 12 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
