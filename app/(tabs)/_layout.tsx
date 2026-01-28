@@ -52,6 +52,9 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <IconSymbol size={36} name="house.fill" color={color} />
           ),
+          tabBarItemStyle: {
+            marginTop: -8,
+          },
         }}
       />
       <Tabs.Screen
@@ -68,12 +71,18 @@ export default function TabLayout() {
       <Tabs.Screen
         name="daily-review"
         options={{
-          title: "ふりかえり",
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "設定",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="moon.stars.fill" color={color} />
+            <IconSymbol size={26} name="gearshape.fill" color={color} />
           ),
-          headerStyle: { backgroundColor: "#F0FFDF" },
-          headerTitleStyle: { color: "#334155" },
+          headerStyle: { backgroundColor: "#F7FCF0" },
+          headerTitleStyle: { color: "#141712" },
         }}
       />
     </Tabs>
