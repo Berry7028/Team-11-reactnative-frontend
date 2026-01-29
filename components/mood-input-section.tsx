@@ -3,10 +3,12 @@ import { Pressable, Text, TextInput, View } from "react-native";
 
 import { IconSymbol, type IconSymbolName } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
+import type { Condition, Mood } from "@/lib/api";
 
+// API の Mood 型とマッピング
 const MOODS: {
   id: string;
-  label: string;
+  label: Mood;
   color: string;
   text: string;
   icon: IconSymbolName;
@@ -27,7 +29,7 @@ const MOODS: {
   },
   {
     id: "meh",
-    label: "もやもや",
+    label: "モヤモヤ",
     color: "#FFD8DF",
     text: "#8B3D48",
     icon: "cloud.fill",
@@ -41,9 +43,10 @@ const MOODS: {
   },
 ];
 
+// API の Condition 型とマッピング
 const BODY_STATES: {
   id: string;
-  label: string;
+  label: Condition;
   color: string;
   text: string;
   icon: IconSymbolName;
@@ -72,28 +75,73 @@ const BODY_STATES: {
   {
     id: "pain",
     label: "痛い",
-    color: "#FFAAB8",
-    text: "#FFFFFF",
-    icon: "heart.circle.fill",
+    color: "#FFDADA",
+    text: "#B22222",
+    icon: "bandage.fill",
   },
 ];
+
+export interface MoodInputData {
+  mood: Mood | null;
+  condition: Condition | null;
+  freeText: string;
+}
 
 interface MoodInputSectionProps {
   placeholder?: string;
   showMoodSelector?: boolean;
   showBodySelector?: boolean;
+  onChange?: (data: MoodInputData) => void;
 }
 
 export function MoodInputSection({
   placeholder = "今の気持ちを自由に書いてね...",
   showMoodSelector = true,
   showBodySelector = true,
+  onChange,
 }: MoodInputSectionProps) {
   const [selectedMoodId, setSelectedMoodId] = useState<string | null>(null);
   const [selectedBodyStateId, setSelectedBodyStateId] = useState<string | null>(
     null,
   );
   const [text, setText] = useState("");
+
+  const getMoodLabel = (id: string | null): Mood | null => {
+    if (!id) return null;
+    return MOODS.find((m) => m.id === id)?.label ?? null;
+  };
+
+  const getConditionLabel = (id: string | null): Condition | null => {
+    if (!id) return null;
+    return BODY_STATES.find((s) => s.id === id)?.label ?? null;
+  };
+
+  const notifyChange = (
+    moodId: string | null,
+    bodyId: string | null,
+    freeText: string,
+  ) => {
+    onChange?.({
+      mood: getMoodLabel(moodId),
+      condition: getConditionLabel(bodyId),
+      freeText,
+    });
+  };
+
+  const handleMoodSelect = (id: string) => {
+    setSelectedMoodId(id);
+    notifyChange(id, selectedBodyStateId, text);
+  };
+
+  const handleBodySelect = (id: string) => {
+    setSelectedBodyStateId(id);
+    notifyChange(selectedMoodId, id, text);
+  };
+
+  const handleTextChange = (newText: string) => {
+    setText(newText);
+    notifyChange(selectedMoodId, selectedBodyStateId, newText);
+  };
 
   return (
     <View style={{ gap: 20 }}>
@@ -124,7 +172,7 @@ export function MoodInputSection({
             {MOODS.map((mood, index) => (
               <Pressable
                 key={mood.id}
-                onPress={() => setSelectedMoodId(mood.id)}
+                onPress={() => handleMoodSelect(mood.id)}
                 style={{
                   flexBasis: "48%",
                   minWidth: "48%",
@@ -192,7 +240,7 @@ export function MoodInputSection({
             {BODY_STATES.map((state, index) => (
               <Pressable
                 key={state.id}
-                onPress={() => setSelectedBodyStateId(state.id)}
+                onPress={() => handleBodySelect(state.id)}
                 style={{
                   flexBasis: "48%",
                   minWidth: "48%",
@@ -254,7 +302,7 @@ export function MoodInputSection({
           <TextInput
             multiline
             value={text}
-            onChangeText={setText}
+            onChangeText={handleTextChange}
             placeholder={placeholder}
             placeholderTextColor="rgba(113, 130, 104, 0.5)"
             maxLength={500}
