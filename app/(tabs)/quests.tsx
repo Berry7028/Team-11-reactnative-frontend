@@ -87,11 +87,11 @@ export default function QuestsScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: '#FFF9FA' }}
-      contentContainerStyle={{ paddingBottom: 28, gap: 20 }}
+      contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
       }>
-      <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
+      <View style={{ paddingHorizontal: 16 }}>
         <Text
           selectable
           style={{

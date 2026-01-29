@@ -45,9 +45,9 @@ export default function LogScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: '#F7FCF0' }}
-      contentContainerStyle={{ paddingBottom: 32, gap: 20 }}>
+      contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}>
       {/* 今日のサマリー：すれ違った仲間カードと同じカードスタイルで2枚並べる */}
-      <View style={{ flexDirection: 'row', marginHorizontal: 16, marginTop: 4, gap: 14 }}>
+      <View style={{ flexDirection: 'row', marginHorizontal: 16, gap: 14 }}>
         <View
           style={{
             flex: 1,

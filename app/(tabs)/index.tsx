@@ -75,12 +75,12 @@ export default function HomeScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: "#F0FFDF" }}
-      contentContainerStyle={{ paddingBottom: 32, gap: 20 }}
+      contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
       }
     >
-      <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+      <View style={{ paddingHorizontal: 16 }}>
         <View
           style={{
             flexDirection: "row",

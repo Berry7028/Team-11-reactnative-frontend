@@ -1,6 +1,7 @@
 import { Redirect, Tabs } from "expo-router";
 import React from "react";
 
+import { AppHeaderTitle } from "@/components/app-header-title";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useAuth } from "@/hooks/use-auth";
@@ -28,8 +29,13 @@ export default function TabLayout() {
           paddingBottom: 14,
           paddingTop: 8,
         },
-        headerStyle: { backgroundColor: "#F0FFDF" },
-        headerTitleStyle: { color: "#3A4D39" },
+        headerStyle: {
+          backgroundColor: "#FFFFFF",
+          borderBottomColor: "#E7EFE1",
+          borderBottomWidth: 1,
+        },
+        headerTitle: () => <AppHeaderTitle />,
+        headerTitleAlign: "left",
         headerShadowVisible: false,
         tabBarButton: HapticTab,
       }}
@@ -38,12 +44,9 @@ export default function TabLayout() {
         name="log"
         options={{
           title: "ログ",
-          headerTitle: "",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={26} name="book.closed.fill" color={color} />
           ),
-          headerStyle: { backgroundColor: "#F7FCF0" },
-          headerTitleStyle: { color: "#141712" },
         }}
       />
       <Tabs.Screen
@@ -53,15 +56,12 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <IconSymbol size={26} name="checkmark.circle.fill" color={color} />
           ),
-          headerStyle: { backgroundColor: "#FFF9FA" },
-          headerTitleStyle: { color: "#332D2E" },
         }}
       />
       <Tabs.Screen
         name="index"
         options={{
           title: "ホーム",
-          headerTitle: "",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={36} name="house.fill" color={color} />
           ),
@@ -77,20 +77,15 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <IconSymbol size={26} name="heart.circle.fill" color={color} />
           ),
-          headerStyle: { backgroundColor: "#F0FFDF" },
-          headerTitleStyle: { color: "#141712" },
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "設定",
-          headerTitle: "",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={26} name="gearshape.fill" color={color} />
           ),
-          headerStyle: { backgroundColor: "#F0FFDF" },
-          headerTitleStyle: { color: "#141712" },
         }}
       />
     </Tabs>

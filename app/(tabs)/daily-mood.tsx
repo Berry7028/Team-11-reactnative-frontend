@@ -104,9 +104,9 @@ export default function DailyMoodScreen() {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ backgroundColor: "#F0FFDF" }}
-        contentContainerStyle={{ paddingBottom: 32, gap: 20 }}
+        contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}
       >
-        <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
+        <View style={{ paddingHorizontal: 20 }}>
           <View
             style={{
               flexDirection: "row",
@@ -220,14 +220,13 @@ export default function DailyMoodScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: "#F0FFDF" }}
-      contentContainerStyle={{ paddingBottom: 28, gap: 20 }}
+      contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
     >
       <View
         style={{
           flexDirection: "row",
           justifyContent: "center",
           gap: 10,
-          paddingTop: 12,
         }}
       >
         <View
