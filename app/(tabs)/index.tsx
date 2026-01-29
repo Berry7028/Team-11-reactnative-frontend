@@ -1,10 +1,9 @@
 import { Image } from "expo-image";
 import React from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
-import { supabase } from "@/lib/supabase";
 
 const ACTIONS = [
   { label: "元気づけて", icon: "sparkles", active: true },
@@ -28,13 +27,6 @@ const DUSTS = [
 ];
 
 export default function HomeScreen() {
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      Alert.alert("サインアウトに失敗しました", error.message);
-    }
-  };
-
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -97,31 +89,6 @@ export default function HomeScreen() {
             <IconSymbol name="bell" size={20} color="#3A4D39" />
           </View>
         </View>
-      </View>
-      <View style={{ paddingHorizontal: 16, alignItems: "flex-end" }}>
-        <Pressable
-          onPress={handleSignOut}
-          style={{
-            paddingVertical: 6,
-            paddingHorizontal: 12,
-            borderRadius: 999,
-            backgroundColor: "rgba(255,255,255,0.75)",
-            borderWidth: 1,
-            borderColor: "rgba(231, 239, 225, 0.9)",
-          }}
-        >
-          <Text
-            selectable
-            style={{
-              fontSize: 12,
-              fontWeight: "700",
-              color: "#6B7A66",
-              fontFamily: Fonts.rounded,
-            }}
-          >
-            サインアウト
-          </Text>
-        </Pressable>
       </View>
 
       <ScrollView
