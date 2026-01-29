@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { signOut } = useAuth();
+  const { signOut, session } = useAuth();
 
   const handleDebugNotification = async (type: "morning" | "night") => {
     const content =
@@ -73,25 +73,25 @@ export default function SettingsScreen() {
             backgroundColor: "#FFFFFF",
             borderRadius: 20,
             padding: 20,
-            gap: 16,
+            gap: 8,
             boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
             borderCurve: "continuous",
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 999,
-                backgroundColor: "rgba(168, 223, 142, 0.2)",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <IconSymbol name="person.fill" size={20} color="#A8DF8E" />
-            </View>
-            <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 12, flex: 1 }}>
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 999,
+                  backgroundColor: "rgba(168, 223, 142, 0.2)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <IconSymbol name="person.fill" size={20} color="#A8DF8E" />
+              </View>
               <Text
                 selectable
                 style={{
@@ -103,18 +103,34 @@ export default function SettingsScreen() {
               >
                 アカウント
               </Text>
-              <Text
-                selectable
-                style={{
-                  fontSize: 12,
-                  color: "#718268",
-                  fontFamily: Fonts.rounded,
-                }}
-              >
-                ログイン中
-              </Text>
             </View>
-            <IconSymbol name="chevron.right" size={16} color="#718268" />
+            {session?.user && (
+              <View style={{ alignItems: "flex-end", minWidth: 120 }}>
+                {session.user.user_metadata?.display_name && (
+                  <Text
+                    selectable
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "700",
+                      color: "#141712",
+                      fontFamily: Fonts.rounded,
+                    }}
+                  >
+                    {session.user.user_metadata.display_name}
+                  </Text>
+                )}
+                <Text
+                  selectable
+                  style={{
+                    fontSize: 12,
+                    color: "#718268",
+                    fontFamily: Fonts.rounded,
+                  }}
+                >
+                  {session.user.email}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
