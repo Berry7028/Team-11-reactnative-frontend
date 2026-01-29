@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import React from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { GrassBackground } from '@/components/grass-background';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 
@@ -42,10 +43,11 @@ const TRAVELERS = [
 
 export default function LogScreen() {
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={{ backgroundColor: '#F7FCF0' }}
-      contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}>
+    <GrassBackground>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ flex: 1, backgroundColor: 'transparent' }}
+        contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}>
       {/* 今日のサマリー：すれ違った仲間カードと同じカードスタイルで2枚並べる */}
       <View style={{ flexDirection: 'row', marginHorizontal: 16, gap: 14 }}>
         <View
@@ -260,6 +262,7 @@ export default function LogScreen() {
           <View style={{ width: 6, height: 6, borderRadius: 999, backgroundColor: 'rgba(255, 170, 184, 0.4)' }} />
         </View>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </GrassBackground>
   );
 }

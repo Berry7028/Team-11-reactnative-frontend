@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
+import { GrassBackground } from "@/components/grass-background";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
 import { useAuth } from "@/hooks/use-auth";
@@ -50,12 +51,13 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={{ backgroundColor: "#F0FFDF" }}
-      contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}
-    >
-      <View style={{ paddingHorizontal: 24, gap: 16 }}>
+    <GrassBackground>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ flex: 1, backgroundColor: "transparent" }}
+        contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}
+      >
+        <View style={{ paddingHorizontal: 24, gap: 16 }}>
         <View
           style={{
             backgroundColor: "#FFFFFF",
@@ -257,7 +259,8 @@ export default function SettingsScreen() {
             ログアウト
           </Text>
         </Pressable>
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </GrassBackground>
   );
 }
