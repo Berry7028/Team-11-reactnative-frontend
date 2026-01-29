@@ -1,9 +1,12 @@
 import { Image } from "expo-image";
-import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Link } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
+import { useAuth } from "@/hooks/use-auth";
+import { getTodayQuests, type Quest } from "@/lib/api";
 
 const ACTIONS = [
   { label: "元気づけて", icon: "sparkles", active: true },
@@ -27,11 +30,55 @@ const DUSTS = [
 ];
 
 export default function HomeScreen() {
+  const { session } = useAuth();
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const userUuid = session?.user?.id;
+
+  const fetchQuests = useCallback(async () => {
+    if (!userUuid) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const data = await getTodayQuests(userUuid);
+      setQuests(data);
+    } catch {
+      // エラーは静かに処理（ホーム画面なので）
+    }
+  }, [userUuid]);
+
+  useEffect(() => {
+    const load = async () => {
+      setIsLoading(true);
+      await fetchQuests();
+      setIsLoading(false);
+    };
+    load();
+  }, [fetchQuests]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchQuests();
+    setIsRefreshing(false);
+  };
+
+  // 現在進行中のクエスト（未完了の最初のクエスト）
+  const currentQuest = quests.find((q) => !q.completed);
+  const completedCount = quests.filter((q) => q.completed).length;
+  const progressPercent = quests.length > 0 ? (completedCount / quests.length) * 100 : 0;
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: "#F0FFDF" }}
       contentContainerStyle={{ paddingBottom: 32, gap: 20 }}
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+      }
     >
       <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
         <View
@@ -263,91 +310,195 @@ export default function HomeScreen() {
       </View>
 
       <View style={{ paddingHorizontal: 16, gap: 16 }}>
-        <View
-          style={{
-            backgroundColor: "rgba(255,255,255,0.95)",
-            padding: 16,
-            borderRadius: 24,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 14,
-            borderWidth: 1,
-            borderColor: "rgba(255,255,255,0.9)",
-            boxShadow: "0 12px 24px rgba(168, 223, 142, 0.2)",
-            borderCurve: "continuous",
-          }}
-        >
+        {isLoading ? (
           <View
             style={{
-              height: 56,
-              width: 56,
-              borderRadius: 18,
-              backgroundColor: "rgba(168, 223, 142, 0.2)",
+              backgroundColor: "rgba(255,255,255,0.95)",
+              padding: 24,
+              borderRadius: 24,
               alignItems: "center",
-              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.9)",
+              boxShadow: "0 12px 24px rgba(168, 223, 142, 0.2)",
+              borderCurve: "continuous",
             }}
           >
-            <IconSymbol name="wind" size={28} color="#A8DF8E" />
+            <ActivityIndicator size="small" color="#A8DF8E" />
+            <Text
+              style={{
+                marginTop: 8,
+                fontSize: 12,
+                color: "rgba(58, 77, 57, 0.6)",
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              読み込み中...
+            </Text>
           </View>
-          <View style={{ flex: 1 }}>
-            <Text
-              selectable
+        ) : currentQuest ? (
+          <Link href="/(tabs)/quests" asChild>
+            <Pressable
               style={{
-                fontSize: 10,
-                fontWeight: "700",
-                color: "#A8DF8E",
-                letterSpacing: 0.5,
-                fontFamily: Fonts.rounded,
-              }}
-            >
-              現在のクエスト
-            </Text>
-            <Text
-              selectable
-              style={{
-                fontSize: 16,
-                fontWeight: "700",
-                color: "#3A4D39",
-                marginTop: 4,
-                fontFamily: Fonts.rounded,
-              }}
-            >
-              深呼吸を1回する
-            </Text>
-            <View
-              style={{
-                marginTop: 10,
-                height: 8,
-                borderRadius: 999,
-                backgroundColor: "rgba(168, 223, 142, 0.15)",
-                overflow: "hidden",
+                backgroundColor: "rgba(255,255,255,0.95)",
+                padding: 16,
+                borderRadius: 24,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 14,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.9)",
+                boxShadow: "0 12px 24px rgba(168, 223, 142, 0.2)",
+                borderCurve: "continuous",
               }}
             >
               <View
                 style={{
-                  width: "40%",
-                  height: "100%",
+                  height: 56,
+                  width: 56,
+                  borderRadius: 18,
+                  backgroundColor: "rgba(168, 223, 142, 0.2)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <IconSymbol name="wind" size={28} color="#A8DF8E" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  selectable
+                  style={{
+                    fontSize: 10,
+                    fontWeight: "700",
+                    color: "#A8DF8E",
+                    letterSpacing: 0.5,
+                    fontFamily: Fonts.rounded,
+                  }}
+                >
+                  現在のクエスト ({completedCount}/{quests.length})
+                </Text>
+                <Text
+                  selectable
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "700",
+                    color: "#3A4D39",
+                    marginTop: 4,
+                    fontFamily: Fonts.rounded,
+                  }}
+                  numberOfLines={1}
+                >
+                  {currentQuest.title}
+                </Text>
+                <View
+                  style={{
+                    marginTop: 10,
+                    height: 8,
+                    borderRadius: 999,
+                    backgroundColor: "rgba(168, 223, 142, 0.15)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: `${progressPercent}%`,
+                      height: "100%",
+                      borderRadius: 999,
+                      backgroundColor: "#A8DF8E",
+                      boxShadow: "0 0 10px rgba(168, 223, 142, 0.6)",
+                    }}
+                  />
+                </View>
+              </View>
+              <View
+                style={{
+                  height: 44,
+                  width: 44,
                   borderRadius: 999,
                   backgroundColor: "#A8DF8E",
-                  boxShadow: "0 0 10px rgba(168, 223, 142, 0.6)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 8px 16px rgba(168, 223, 142, 0.3)",
                 }}
-              />
-            </View>
-          </View>
-          <Pressable
+              >
+                <IconSymbol name="chevron.right" size={18} color="#FFFFFF" />
+              </View>
+            </Pressable>
+          </Link>
+        ) : quests.length > 0 ? (
+          <View
             style={{
-              height: 44,
-              width: 44,
-              borderRadius: 999,
-              backgroundColor: "#A8DF8E",
+              backgroundColor: "rgba(255,255,255,0.95)",
+              padding: 24,
+              borderRadius: 24,
               alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 8px 16px rgba(168, 223, 142, 0.3)",
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.9)",
+              boxShadow: "0 12px 24px rgba(168, 223, 142, 0.2)",
+              borderCurve: "continuous",
             }}
           >
-            <IconSymbol name="play.fill" size={18} color="#FFFFFF" />
-          </Pressable>
-        </View>
+            <IconSymbol name="checkmark.circle.fill" size={32} color="#A8DF8E" />
+            <Text
+              style={{
+                marginTop: 8,
+                fontSize: 14,
+                fontWeight: "700",
+                color: "#3A4D39",
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              今日のクエスト完了！
+            </Text>
+            <Text
+              style={{
+                marginTop: 4,
+                fontSize: 12,
+                color: "rgba(58, 77, 57, 0.6)",
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              お疲れ様でした 🎉
+            </Text>
+          </View>
+        ) : (
+          <Link href="/(tabs)/daily-mood" asChild>
+            <Pressable
+              style={{
+                backgroundColor: "rgba(255,255,255,0.95)",
+                padding: 24,
+                borderRadius: 24,
+                alignItems: "center",
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.9)",
+                boxShadow: "0 12px 24px rgba(168, 223, 142, 0.2)",
+                borderCurve: "continuous",
+              }}
+            >
+              <IconSymbol name="sparkles" size={32} color="#A8DF8E" />
+              <Text
+                style={{
+                  marginTop: 8,
+                  fontSize: 14,
+                  fontWeight: "700",
+                  color: "#3A4D39",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                今日の気分を記録しよう
+              </Text>
+              <Text
+                style={{
+                  marginTop: 4,
+                  fontSize: 12,
+                  color: "rgba(58, 77, 57, 0.6)",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                タップしてクエストを生成
+              </Text>
+            </Pressable>
+          </Link>
+        )}
       </View>
     </ScrollView>
   );

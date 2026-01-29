@@ -90,12 +90,6 @@ export default function TabLayout() {
           headerTitleStyle: { color: "#141712" },
         }}
       />
-      <Tabs.Screen
-        name="daily-review"
-        options={{
-          href: null,
-        }}
-      />
     </Tabs>
   );
 }

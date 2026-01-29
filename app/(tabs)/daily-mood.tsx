@@ -1,10 +1,17 @@
 import { Image } from "expo-image";
-import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import React, { useState } from "react";
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from "react-native";
 
-import { MoodInputSection } from "@/components/mood-input-section";
+import { MoodInputSection, type MoodInputData } from "@/components/mood-input-section";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  ApiRequestError,
+  generateRecommendations,
+  submitMorningQuestionnaire,
+  submitNightQuestionnaire,
+} from "@/lib/api";
 
 function useTimeOfDay() {
   const hour = new Date().getHours();
@@ -14,6 +21,82 @@ function useTimeOfDay() {
 
 export default function DailyMoodScreen() {
   const timeOfDay = useTimeOfDay();
+  const { session } = useAuth();
+  const [moodData, setMoodData] = useState<MoodInputData>({
+    mood: null,
+    condition: null,
+    freeText: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const userUuid = session?.user?.id;
+
+  const handleMoodChange = (data: MoodInputData) => {
+    setMoodData(data);
+  };
+
+  const handleSubmitMorning = async () => {
+    if (!userUuid) {
+      Alert.alert("エラー", "ログインしてください");
+      return;
+    }
+    if (!moodData.mood || !moodData.condition) {
+      Alert.alert("入力エラー", "気分と体調を選択してください");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await submitMorningQuestionnaire(userUuid, {
+        mood: moodData.mood,
+        condition: moodData.condition,
+        free_text: moodData.freeText,
+      });
+
+      // AIレコメンデーション生成
+      await generateRecommendations(userUuid);
+
+      Alert.alert("完了", "記録を保存しました！クエストが生成されました。");
+    } catch (error) {
+      const message =
+        error instanceof ApiRequestError
+          ? error.message
+          : "保存に失敗しました";
+      Alert.alert("エラー", message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmitNight = async () => {
+    if (!userUuid) {
+      Alert.alert("エラー", "ログインしてください");
+      return;
+    }
+    if (!moodData.mood || !moodData.condition) {
+      Alert.alert("入力エラー", "気分と体調を選択してください");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await submitNightQuestionnaire(userUuid, {
+        mood: moodData.mood,
+        condition: moodData.condition,
+        free_text: moodData.freeText,
+      });
+
+      Alert.alert("おやすみなさい", "今日もお疲れ様でした。ゆっくり休んでね。");
+    } catch (error) {
+      const message =
+        error instanceof ApiRequestError
+          ? error.message
+          : "保存に失敗しました";
+      Alert.alert("エラー", message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (timeOfDay === "night") {
     // 夜モード: 簡略版振り返りUI
@@ -66,7 +149,10 @@ export default function DailyMoodScreen() {
           </View>
         </View>
 
-        <MoodInputSection placeholder="今日あったことや、今の気持ちを全部吐き出してみてね..." />
+        <MoodInputSection
+          placeholder="今日あったことや、今の気持ちを全部吐き出してみてね..."
+          onChange={handleMoodChange}
+        />
 
         <View style={{ paddingHorizontal: 24, alignItems: "center", gap: 12 }}>
           <View
@@ -96,6 +182,8 @@ export default function DailyMoodScreen() {
             </Text>
           </View>
           <Pressable
+            onPress={handleSubmitNight}
+            disabled={isSubmitting}
             style={{
               width: "100%",
               backgroundColor: "#FFAAB8",
@@ -103,19 +191,24 @@ export default function DailyMoodScreen() {
               paddingVertical: 16,
               alignItems: "center",
               boxShadow: "0 8px 18px rgba(255, 170, 184, 0.4)",
+              opacity: isSubmitting ? 0.7 : 1,
             }}
           >
-            <Text
-              selectable
-              style={{
-                fontSize: 16,
-                fontWeight: "700",
-                color: "#FFFFFF",
-                fontFamily: Fonts.rounded,
-              }}
-            >
-              おやすみなさい
-            </Text>
+            {isSubmitting ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text
+                selectable
+                style={{
+                  fontSize: 16,
+                  fontWeight: "700",
+                  color: "#FFFFFF",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                おやすみなさい
+              </Text>
+            )}
           </Pressable>
         </View>
       </ScrollView>
@@ -256,10 +349,15 @@ export default function DailyMoodScreen() {
         </View>
       </View>
 
-      <MoodInputSection placeholder="今の気持ちを自由に書いてね..." />
+      <MoodInputSection
+        placeholder="今の気持ちを自由に書いてね..."
+        onChange={handleMoodChange}
+      />
 
       <View style={{ paddingHorizontal: 24 }}>
         <Pressable
+          onPress={handleSubmitMorning}
+          disabled={isSubmitting}
           style={{
             backgroundColor: "#A8DF8E",
             borderRadius: 999,
@@ -269,20 +367,31 @@ export default function DailyMoodScreen() {
             flexDirection: "row",
             gap: 8,
             boxShadow: "0 10px 18px rgba(168, 223, 142, 0.4)",
+            opacity: isSubmitting ? 0.7 : 1,
           }}
         >
-          <Text
-            selectable
-            style={{
-              color: "#FFFFFF",
-              fontSize: 14,
-              fontWeight: "700",
-              fontFamily: Fonts.rounded,
-            }}
-          >
-            記録を保存する
-          </Text>
-          <IconSymbol name="checkmark.circle.fill" size={18} color="#FFFFFF" />
+          {isSubmitting ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <>
+              <Text
+                selectable
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 14,
+                  fontWeight: "700",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                記録を保存する
+              </Text>
+              <IconSymbol
+                name="checkmark.circle.fill"
+                size={18}
+                color="#FFFFFF"
+              />
+            </>
+          )}
         </Pressable>
       </View>
     </ScrollView>
