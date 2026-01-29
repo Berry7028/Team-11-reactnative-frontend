@@ -17,14 +17,19 @@ export default function SignUpScreen() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
-    if (!email || !password) {
+    if (!username || !email || !password || !confirmPassword) {
       Alert.alert(
         "入力エラー",
-        "メールアドレスとパスワードを入力してください。",
+        "ユーザーID・メールアドレス・パスワードを入力してください。",
       );
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert("入力エラー", "パスワードが一致しません。");
       return;
     }
     setLoading(true);
@@ -32,7 +37,7 @@ export default function SignUpScreen() {
       email,
       password,
       options: {
-        data: { username },
+        data: { display_name: username },
       },
     });
     if (error) {
@@ -185,6 +190,38 @@ export default function SignUpScreen() {
             autoCapitalize="none"
             value={password}
             onChangeText={setPassword}
+          />
+        </View>
+        <View style={{ gap: 6 }}>
+          <Text
+            selectable
+            style={{
+              fontSize: 12,
+              fontWeight: "700",
+              color: "#3A4D39",
+              fontFamily: Fonts.rounded,
+            }}
+          >
+            パスワード（確認）
+          </Text>
+          <TextInput
+            placeholder="******"
+            secureTextEntry
+            placeholderTextColor="rgba(107, 122, 102, 0.5)"
+            style={{
+              height: 52,
+              borderRadius: 18,
+              backgroundColor: "#FFFFFF",
+              paddingHorizontal: 16,
+              fontSize: 14,
+              color: "#141712",
+              boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
+              borderCurve: "continuous",
+              fontFamily: Fonts.rounded,
+            }}
+            autoCapitalize="none"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
           />
         </View>
       </View>
