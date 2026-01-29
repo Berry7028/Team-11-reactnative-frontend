@@ -5,8 +5,8 @@ import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
-type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
-type IconSymbolName = keyof typeof MAPPING;
+type IconMapping = Partial<Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>>;
+export type IconSymbolName = keyof typeof MAPPING;
 
 /**
  * Add your SF Symbols to Material Icons mappings here.
@@ -18,6 +18,31 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'person.fill': 'person',
+  bell: 'notifications',
+  sparkles: 'auto-awesome',
+  ear: 'hearing',
+  'heart.fill': 'favorite',
+  'heart.circle.fill': 'favorite',
+  'checkmark.circle.fill': 'check-circle',
+  'checkmark.seal.fill': 'verified',
+  'book.closed.fill': 'menu-book',
+  'calendar': 'calendar-today',
+  'moon.stars.fill': 'nights-stay',
+  'sun.max.fill': 'wb-sunny',
+  'cloud.fill': 'cloud',
+  'cup.and.saucer.fill': 'local-cafe',
+  'pencil': 'edit',
+  'map': 'map',
+  'gearshape': 'settings',
+  'person.3.fill': 'groups',
+  'person.2.fill': 'groups',
+  'wind': 'air',
+  'play.fill': 'play-arrow',
+  'plus': 'add',
+  'leaf': 'local-florist',
+  'circle.fill': 'circle',
+  'figure.walk': 'directions-walk',
 } as IconMapping;
 
 /**
