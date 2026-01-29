@@ -46,90 +46,110 @@ export default function LogScreen() {
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: '#F7FCF0' }}
       contentContainerStyle={{ paddingBottom: 32, gap: 20 }}>
-      <View
-        style={{
-          marginHorizontal: 16,
-          backgroundColor: '#FFFFFF',
-          borderBottomLeftRadius: 28,
-          borderBottomRightRadius: 28,
-          paddingVertical: 28,
-          paddingHorizontal: 20,
-          alignItems: 'center',
-          gap: 12,
-          borderWidth: 1,
-          borderColor: '#E2ECD6',
-          boxShadow: '0 6px 14px rgba(125, 161, 94, 0.15)',
-          borderCurve: 'continuous',
-        }}>
+      {/* 今日のサマリー：すれ違った仲間カードと同じカードスタイルで2枚並べる */}
+      <View style={{ flexDirection: 'row', marginHorizontal: 16, marginTop: 4, gap: 14 }}>
         <View
           style={{
-            height: 72,
-            width: 72,
-            borderRadius: 999,
-            backgroundColor: '#F0FFDF',
+            flex: 1,
+            minWidth: 0,
+            paddingVertical: 16,
+            paddingHorizontal: 14,
             alignItems: 'center',
             justifyContent: 'center',
-            borderWidth: 8,
-            borderColor: 'rgba(240, 255, 223, 0.3)',
+            backgroundColor: '#FFFFFF',
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: '#EEF1ED',
+            shadowColor: '#141712',
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 6,
+            borderCurve: 'continuous',
           }}>
-          <IconSymbol name="person.3.fill" size={32} color="#7DA15E" />
+          <View
+            style={{
+              marginBottom: 4,
+              paddingVertical: 6,
+              paddingHorizontal: 8,
+              borderRadius: 12,
+              backgroundColor: 'rgba(125, 161, 94, 0.08)',
+            }}>
+            <IconSymbol name="person.3.fill" size={22} color="#7DA15E" />
+          </View>
+          <Text
+            selectable
+            style={{
+              fontSize: 10,
+              fontWeight: '600',
+              color: '#718268',
+              fontFamily: Fonts.rounded,
+              letterSpacing: 0.5,
+            }}>
+            今日すれ違った
+          </Text>
+          <Text
+            selectable
+            style={{
+              fontSize: 22,
+              fontWeight: '700',
+              color: '#141712',
+              fontFamily: Fonts.rounded,
+            }}>
+            12人
+          </Text>
         </View>
-        <Text
-          selectable
+        <View
           style={{
-            fontSize: 20,
-            fontWeight: '700',
-            color: '#141712',
-            textAlign: 'center',
-            fontFamily: Fonts.rounded,
+            flex: 1,
+            minWidth: 0,
+            paddingVertical: 16,
+            paddingHorizontal: 14,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#FFFFFF',
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: '#EEF1ED',
+            shadowColor: '#141712',
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 6,
+            borderCurve: 'continuous',
           }}>
-          今日すれ違った仲間: 12人
-        </Text>
-        <Text
-          selectable
-          style={{
-            fontSize: 12,
-            color: '#718268',
-            textAlign: 'center',
-            lineHeight: 18,
-            fontFamily: Fonts.rounded,
-          }}>
-          静かな時間の中で、誰かと道が重なりました。
-        </Text>
-      </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: 20,
-        }}>
-        <Text
-          selectable
-          style={{
-            fontSize: 10,
-            fontWeight: '700',
-            letterSpacing: 2,
-            color: '#718268',
-            fontFamily: Fonts.rounded,
-          }}>
-          最近のすれ違い
-        </Text>
-        <Text
-          selectable
-          style={{
-            fontSize: 10,
-            fontWeight: '700',
-            color: '#D87D8E',
-            backgroundColor: 'rgba(255, 170, 184, 0.2)',
-            paddingHorizontal: 12,
-            paddingVertical: 4,
-            borderRadius: 999,
-            fontFamily: Fonts.rounded,
-          }}>
-          今日
-        </Text>
+          <View
+            style={{
+              marginBottom: 4,
+              paddingVertical: 6,
+              paddingHorizontal: 8,
+              borderRadius: 12,
+              backgroundColor: 'rgba(255, 170, 184, 0.12)',
+            }}>
+            <IconSymbol name="heart.fill" size={22} color="#D87D8E" />
+          </View>
+          <Text
+            selectable
+            style={{
+              fontSize: 10,
+              fontWeight: '600',
+              color: '#718268',
+              fontFamily: Fonts.rounded,
+              letterSpacing: 0.5,
+            }}>
+            お疲れ様スタンプ
+          </Text>
+          <Text
+            selectable
+            style={{
+              fontSize: 22,
+              fontWeight: '700',
+              color: '#332D2E',
+              fontFamily: Fonts.rounded,
+            }}>
+            3件
+          </Text>
+        </View>
       </View>
 
       <View style={{ paddingHorizontal: 16, gap: 14 }}>
@@ -146,7 +166,11 @@ export default function LogScreen() {
               borderRadius: 20,
               borderWidth: 1,
               borderColor: '#EEF1ED',
-              boxShadow: '0 6px 12px rgba(20, 23, 18, 0.08)',
+              shadowColor: '#141712',
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.08,
+              shadowRadius: 12,
+              elevation: 6,
               borderCurve: 'continuous',
             }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>

@@ -38,6 +38,7 @@ export default function TabLayout() {
         name="log"
         options={{
           title: "ログ",
+          headerTitle: "",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={26} name="book.closed.fill" color={color} />
           ),
@@ -60,6 +61,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "ホーム",
+          headerTitle: "",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={36} name="house.fill" color={color} />
           ),
@@ -83,6 +85,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: "設定",
+          headerTitle: "",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={26} name="gearshape.fill" color={color} />
           ),
