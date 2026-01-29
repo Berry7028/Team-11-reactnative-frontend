@@ -43,3 +43,6 @@ app-example
 /android
 
 docs/ui/
+
+# env files
+.env
