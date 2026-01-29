@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 type AuthContextValue = {
   session: Session | null;
   isLoading: boolean;
+  signOut: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -14,6 +15,13 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const signOut = React.useCallback(async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      throw error;
+    }
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -48,7 +56,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const value = useMemo(() => ({ session, isLoading }), [session, isLoading]);
+  const value = useMemo(
+    () => ({ session, isLoading, signOut }),
+    [session, isLoading, signOut],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
