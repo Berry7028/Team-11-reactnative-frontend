@@ -53,84 +53,81 @@ export default function SettingsScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: "#F0FFDF" }}
-      contentContainerStyle={{ paddingBottom: 32, paddingTop: 20, gap: 20 }}
+      contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}
     >
       <View style={{ paddingHorizontal: 24, gap: 16 }}>
-        <Text
-          selectable
-          style={{
-            fontSize: 20,
-            fontWeight: "700",
-            color: "#141712",
-            fontFamily: Fonts.rounded,
-          }}
-        >
-          設定
-        </Text>
-
         <View
           style={{
             backgroundColor: "#FFFFFF",
             borderRadius: 20,
             padding: 20,
-            gap: 8,
-            boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
+            borderWidth: 1,
+            borderColor: "#EEF1ED",
+            shadowColor: "#141712",
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 6,
             borderCurve: "continuous",
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 12, flex: 1 }}>
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 999,
-                  backgroundColor: "rgba(168, 223, 142, 0.2)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <IconSymbol name="person.fill" size={20} color="#A8DF8E" />
-              </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+            <View
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 999,
+                backgroundColor: "rgba(168, 223, 142, 0.2)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <IconSymbol name="person.fill" size={22} color="#A8DF8E" />
+            </View>
+            <View style={{ flex: 1, minWidth: 0, justifyContent: "center", gap: 2 }}>
               <Text
                 selectable
                 style={{
-                  fontSize: 14,
-                  fontWeight: "700",
-                  color: "#141712",
+                  fontSize: 11,
+                  fontWeight: "600",
+                  color: "#718268",
                   fontFamily: Fonts.rounded,
+                  letterSpacing: 0.5,
                 }}
               >
                 アカウント
               </Text>
-            </View>
-            {session?.user && (
-              <View style={{ alignItems: "flex-end", minWidth: 120 }}>
-                {session.user.user_metadata?.display_name && (
+              {session?.user && (
+                <>
+                  {session.user.user_metadata?.display_name ? (
+                    <Text
+                      selectable
+                      numberOfLines={1}
+                      style={{
+                        fontSize: 15,
+                        fontWeight: "700",
+                        color: "#141712",
+                        fontFamily: Fonts.rounded,
+                      }}
+                    >
+                      {session.user.user_metadata.display_name}
+                    </Text>
+                  ) : null}
                   <Text
                     selectable
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
                     style={{
-                      fontSize: 14,
-                      fontWeight: "700",
-                      color: "#141712",
+                      fontSize: 12,
+                      color: "#718268",
                       fontFamily: Fonts.rounded,
                     }}
                   >
-                    {session.user.user_metadata.display_name}
+                    {session.user.email ?? ""}
                   </Text>
-                )}
-                <Text
-                  selectable
-                  style={{
-                    fontSize: 12,
-                    color: "#718268",
-                    fontFamily: Fonts.rounded,
-                  }}
-                >
-                  {session.user.email}
-                </Text>
-              </View>
-            )}
+                </>
+              )}
+            </View>
           </View>
         </View>
 
@@ -140,7 +137,13 @@ export default function SettingsScreen() {
             borderRadius: 20,
             padding: 20,
             gap: 12,
-            boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
+            borderWidth: 1,
+            borderColor: "#EEF1ED",
+            shadowColor: "#141712",
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 6,
             borderCurve: "continuous",
           }}
         >
@@ -216,7 +219,13 @@ export default function SettingsScreen() {
             flexDirection: "row",
             alignItems: "center",
             gap: 12,
-            boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
+            borderWidth: 1,
+            borderColor: "#EEF1ED",
+            shadowColor: "#141712",
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 6,
             borderCurve: "continuous",
           }}
         >
