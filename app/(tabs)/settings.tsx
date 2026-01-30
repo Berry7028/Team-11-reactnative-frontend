@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -9,35 +10,77 @@ import { Fonts } from "@/constants/theme";
 import { useAuth } from "@/hooks/use-auth";
 
 const DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY = "debug:skipQuestionnaireLimit";
+const DEBUG_SHOW_ENCOUNTERS_WITHOUT_NIGHT_KEY = "debug:showEncountersWithoutNight";
 
-const getDebugSkipLimit = (): boolean => {
-  if (typeof localStorage === "undefined") return false;
-  const raw = localStorage.getItem(DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY);
-  return raw === "true";
+const getDebugSkipLimit = async (): Promise<boolean> => {
+  try {
+    const raw = await AsyncStorage.getItem(DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY);
+    return raw === "true";
+  } catch {
+    return false;
+  }
 };
 
-const setDebugSkipLimit = (value: boolean) => {
-  if (typeof localStorage === "undefined") return;
-  localStorage.setItem(DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY, String(value));
+const setDebugSkipLimit = async (value: boolean) => {
+  try {
+    await AsyncStorage.setItem(DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY, String(value));
+  } catch {
+    // エラーは無視
+  }
+};
+
+const getDebugShowEncountersWithoutNight = async (): Promise<boolean> => {
+  try {
+    const raw = await AsyncStorage.getItem(DEBUG_SHOW_ENCOUNTERS_WITHOUT_NIGHT_KEY);
+    return raw === "true";
+  } catch {
+    return false;
+  }
+};
+
+const setDebugShowEncountersWithoutNight = async (value: boolean) => {
+  try {
+    await AsyncStorage.setItem(DEBUG_SHOW_ENCOUNTERS_WITHOUT_NIGHT_KEY, String(value));
+  } catch {
+    // エラーは無視
+  }
 };
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { signOut, session } = useAuth();
   const [skipQuestionnaireLimit, setSkipQuestionnaireLimit] = useState(false);
+  const [showEncountersWithoutNight, setShowEncountersWithoutNight] = useState(false);
 
   useEffect(() => {
-    setSkipQuestionnaireLimit(getDebugSkipLimit());
+    const loadDebugSettings = async () => {
+      const skipLimit = await getDebugSkipLimit();
+      const showEncounters = await getDebugShowEncountersWithoutNight();
+      setSkipQuestionnaireLimit(skipLimit);
+      setShowEncountersWithoutNight(showEncounters);
+    };
+    loadDebugSettings();
   }, []);
 
-  const handleToggleSkipLimit = (value: boolean) => {
-    setDebugSkipLimit(value);
+  const handleToggleSkipLimit = async (value: boolean) => {
+    await setDebugSkipLimit(value);
     setSkipQuestionnaireLimit(value);
     Alert.alert(
       value ? "有効化" : "無効化",
       value
         ? "アンケートの回答制限がスキップされました"
         : "アンケートの回答制限が有効になりました"
+    );
+  };
+
+  const handleToggleShowEncounters = async (value: boolean) => {
+    await setDebugShowEncountersWithoutNight(value);
+    setShowEncountersWithoutNight(value);
+    Alert.alert(
+      value ? "有効化" : "無効化",
+      value
+        ? "夜のアンケートを答えなくてもすれ違いを見れるようになりました"
+        : "夜のアンケート完了が必要になりました"
     );
   };
 
@@ -311,6 +354,51 @@ export default function SettingsScreen() {
               onValueChange={handleToggleSkipLimit}
               trackColor={{ false: "#E5E5E5", true: "rgba(168, 223, 142, 0.5)" }}
               thumbColor={skipQuestionnaireLimit ? "#A8DF8E" : "#F4F3F4"}
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              backgroundColor: "rgba(255, 170, 184, 0.1)",
+              borderRadius: 12,
+              paddingVertical: 12,
+              paddingHorizontal: 14,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+              <IconSymbol name="eye.fill" size={16} color="#FFAAB8" />
+              <View style={{ flex: 1 }}>
+                <Text
+                  selectable
+                  style={{
+                    fontSize: 12,
+                    fontWeight: "700",
+                    color: "#3A4D39",
+                    fontFamily: Fonts.rounded,
+                  }}
+                >
+                  すれ違いをデバッグモードで見る
+                </Text>
+                <Text
+                  selectable
+                  style={{
+                    fontSize: 10,
+                    color: "#718268",
+                    fontFamily: Fonts.rounded,
+                    marginTop: 2,
+                  }}
+                >
+                  デバッグ用: 夜のアンケート未回答でもすれ違いを表示
+                </Text>
+              </View>
+            </View>
+            <Switch
+              value={showEncountersWithoutNight}
+              onValueChange={handleToggleShowEncounters}
+              trackColor={{ false: "#E5E5E5", true: "rgba(255, 170, 184, 0.5)" }}
+              thumbColor={showEncountersWithoutNight ? "#FFAAB8" : "#F4F3F4"}
             />
           </View>
         </View>
