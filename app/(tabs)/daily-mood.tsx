@@ -30,6 +30,14 @@ const STORAGE_KEYS = {
   night: "questionnaire:lastSubmitted:night",
 } as const;
 
+const DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY = "debug:skipQuestionnaireLimit";
+
+const getDebugSkipLimit = (): boolean => {
+  if (typeof localStorage === "undefined") return false;
+  const raw = localStorage.getItem(DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY);
+  return raw === "true";
+};
+
 const padTime = (value: number) => value.toString().padStart(2, "0");
 
 const isSameDay = (a: Date, b: Date) =>
@@ -140,8 +148,9 @@ export default function DailyMoodScreen() {
 
   const lastSubmittedAt =
     timeOfDay === "day" ? lastMorningSubmittedAt : lastNightSubmittedAt;
+  const skipLimit = getDebugSkipLimit();
   const hasSubmittedThisWindow =
-    lastSubmittedAt !== null && lastSubmittedAt >= windowStart.getTime();
+    !skipLimit && lastSubmittedAt !== null && lastSubmittedAt >= windowStart.getTime();
   const nextCountdown = useMemo(
     () => formatCountdown(nextWindowStart.getTime() - now.getTime()),
     [nextWindowStart, now],
