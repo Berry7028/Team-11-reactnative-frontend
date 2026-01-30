@@ -16,6 +16,10 @@ export { getTodayQuests, toggleQuestComplete } from "./quests";
 // Location API
 export { recordLocation, getMyEncounters } from "./location";
 
+// User API
+export { getMyProfile, updateMyAvatar } from "./user";
+export type { MyProfile } from "./user";
+
 // Types
 export type {
   Mood,

@@ -41,12 +41,37 @@ export async function getMyEncounters(): Promise<EncounterWithQuests[]> {
     return [];
   }
 
+  // 相手のユーザーIDリストを取得
+  const otherUserIds = encounters.map((e) => e.other_user_id);
+
+  const { data: users, error: usersError } = await supabase
+    .from("users")
+    .select("uuid, display_name, avatar_url")
+    .in("uuid", otherUserIds);
+
+  if (usersError) {
+    console.error("ユーザー情報の取得に失敗:", usersError);
+    // ユーザー情報が取れなくても続行
+  }
+
+  // ユーザー情報をマップ化
+  const userMap = new Map(
+    users?.map((user) => [
+      user.uuid,
+      {
+        display_name: user.display_name ?? null,
+        avatar_url: user.avatar_url ?? null,
+      },
+    ]) ?? []
+  );
+
   // 今日の日付（YYYY-MM-DD形式）
   const today = new Date().toISOString().split("T")[0];
 
   // 各すれ違いに対して、相手の今日完了したクエストを取得
   const encountersWithQuests: EncounterWithQuests[] = await Promise.all(
     encounters.map(async (encounter) => {
+      const otherUserProfile = userMap.get(encounter.other_user_id);
       // 相手の今日完了したクエストを取得
       const { data: quests, error: questsError } = await supabase
         .from("quests")
@@ -73,8 +98,10 @@ export async function getMyEncounters(): Promise<EncounterWithQuests[]> {
       return {
         id: encounter.id,
         other_user_id: encounter.other_user_id,
-        other_user_name: encounter.other_user_name ?? null,
-        other_user_avatar: encounter.other_user_avatar ?? null,
+        other_user_name:
+          encounter.other_user_name ?? otherUserProfile?.display_name ?? null,
+        other_user_avatar:
+          encounter.other_user_avatar ?? otherUserProfile?.avatar_url ?? null,
         started_at: encounter.started_at,
         last_seen_at: encounter.last_seen_at,
         ended_at: encounter.ended_at,

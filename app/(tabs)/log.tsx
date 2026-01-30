@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { Image } from 'expo-image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { GrassBackground } from '@/components/grass-background';
+import { AvatarImage } from '@/components/ui/avatar-image';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { useNightQuestionnaire } from '@/hooks/use-night-questionnaire';
@@ -20,9 +20,6 @@ const getDebugShowEncountersWithoutNight = async (): Promise<boolean> => {
     return false;
   }
 };
-
-// デフォルトアプリアイコンのURL
-const DEFAULT_AVATAR = require('@/assets/images/icon.png');
 
 export default function LogScreen() {
   const { isCompleted, isLoading: isLoadingQuestionnaire } = useNightQuestionnaire();
@@ -235,9 +232,6 @@ export default function LogScreen() {
         {!isLoadingEncounters && encounters.length > 0 && (
           <View style={{ paddingHorizontal: 16, gap: 14 }}>
             {encounters.map((encounter) => {
-              const avatarSource = encounter.other_user_avatar
-                ? { uri: encounter.other_user_avatar }
-                : DEFAULT_AVATAR;
               const displayName = encounter.other_user_name || '旅の仲間';
 
               // 今日達成したクエストを表示（最大3件）
@@ -268,20 +262,10 @@ export default function LogScreen() {
                     borderCurve: 'continuous',
                   }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
-                    <View
-                      style={{
-                        height: 56,
-                        width: 56,
-                        borderRadius: 999,
-                        backgroundColor: '#F0FFDF',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                        borderWidth: 2,
-                        borderColor: '#F0FFDF',
-                      }}>
-                      <Image source={avatarSource} style={{ width: 56, height: 56 }} />
-                    </View>
+                    <AvatarImage
+                      avatarUrl={encounter.other_user_avatar}
+                      size={56}
+                    />
                     <View style={{ flex: 1 }}>
                       <Text
                         selectable

@@ -1,13 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { Alert, Pressable, ScrollView, Switch, Text, TextInput, View } from "react-native";
 
 import { GrassBackground } from "@/components/grass-background";
+import { AvatarImage } from "@/components/ui/avatar-image";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
 import { useAuth } from "@/hooks/use-auth";
+import { getMyProfile, updateMyAvatar } from "@/lib/api";
 
 const DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY = "debug:skipQuestionnaireLimit";
 const DEBUG_SHOW_ENCOUNTERS_WITHOUT_NIGHT_KEY = "debug:showEncountersWithoutNight";
@@ -51,6 +53,20 @@ export default function SettingsScreen() {
   const { signOut, session } = useAuth();
   const [skipQuestionnaireLimit, setSkipQuestionnaireLimit] = useState(false);
   const [showEncountersWithoutNight, setShowEncountersWithoutNight] = useState(false);
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState<string | null>(null);
+  const [avatarUrlInput, setAvatarUrlInput] = useState("");
+  const [isSavingAvatar, setIsSavingAvatar] = useState(false);
+
+  const loadProfile = useCallback(async () => {
+    try {
+      const profile = await getMyProfile();
+      const avatarUrl = profile?.avatar_url ?? null;
+      setProfileAvatarUrl(avatarUrl);
+      setAvatarUrlInput(avatarUrl ?? "");
+    } catch (error) {
+      console.error("プロフィールの取得に失敗:", error);
+    }
+  }, []);
 
   useEffect(() => {
     const loadDebugSettings = async () => {
@@ -61,6 +77,12 @@ export default function SettingsScreen() {
     };
     loadDebugSettings();
   }, []);
+
+  useEffect(() => {
+    if (session?.user) {
+      loadProfile();
+    }
+  }, [session?.user, loadProfile]);
 
   const handleToggleSkipLimit = async (value: boolean) => {
     await setDebugSkipLimit(value);
@@ -108,6 +130,18 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleSaveAvatarUrl = async () => {
+    setIsSavingAvatar(true);
+    try {
+      await updateMyAvatar(avatarUrlInput);
+      await loadProfile();
+    } catch {
+      Alert.alert("エラー", "アバターURLの保存に失敗しました");
+    } finally {
+      setIsSavingAvatar(false);
+    }
+  };
+
   const handleLogout = () => {
     Alert.alert("ログアウト", "ログアウトしますか？", [
       { text: "キャンセル", style: "cancel" },
@@ -146,18 +180,7 @@ export default function SettingsScreen() {
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
-            <View
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 999,
-                backgroundColor: "rgba(168, 223, 142, 0.2)",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <IconSymbol name="person.fill" size={22} color="#A8DF8E" />
-            </View>
+            <AvatarImage avatarUrl={profileAvatarUrl} size={48} />
             <View style={{ flex: 1, minWidth: 0, justifyContent: "center", gap: 2 }}>
               <Text
                 selectable
@@ -202,6 +225,61 @@ export default function SettingsScreen() {
                 </>
               )}
             </View>
+          </View>
+
+          {/* アバターURL入力 */}
+          <View style={{ marginTop: 16, gap: 8 }}>
+            <Text
+              selectable
+              style={{
+                fontSize: 12,
+                fontWeight: "700",
+                color: "#718268",
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              アバターURL
+            </Text>
+            <TextInput
+              placeholder="https://..."
+              placeholderTextColor="rgba(113, 130, 104, 0.5)"
+              value={avatarUrlInput}
+              onChangeText={setAvatarUrlInput}
+              style={{
+                height: 44,
+                borderRadius: 12,
+                backgroundColor: "rgba(168, 223, 142, 0.1)",
+                paddingHorizontal: 14,
+                fontSize: 13,
+                color: "#141712",
+                fontFamily: Fonts.rounded,
+              }}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <Pressable
+              onPress={handleSaveAvatarUrl}
+              disabled={isSavingAvatar}
+              style={{
+                backgroundColor: "rgba(168, 223, 142, 0.3)",
+                borderRadius: 12,
+                paddingVertical: 10,
+                alignItems: "center",
+                opacity: isSavingAvatar ? 0.7 : 1,
+              }}
+            >
+              <Text
+                selectable
+                style={{
+                  fontSize: 13,
+                  fontWeight: "700",
+                  color: "#3A4D39",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                {isSavingAvatar ? "保存中..." : "保存"}
+              </Text>
+            </Pressable>
           </View>
         </View>
 
