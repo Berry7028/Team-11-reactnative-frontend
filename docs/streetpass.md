@@ -2,7 +2,8 @@
 
 ## 概要
 
-3DS のすれ違い通信にインスパイアされた機能です。PostGIS（Supabase）+ expo-location を活用し、バックグラウンドで位置情報を更新、半径250m以内のユーザーを「すれ違い」として検出します。
+3DS のすれ違い通信にインスパイアされた機能です。
+PostGIS（Supabase）+ expo-location を活用し、バックグラウンドで位置情報を更新、半径250m以内のユーザーを「すれ違い」として検出します。
 
 夜の気分アンケート回答後、ログ画面にすれ違ったユーザーのリスト（アバター、ユーザー名、達成クエスト）を表示します。
 
@@ -10,46 +11,132 @@
 
 ## アーキテクチャ
 
+### システム全体図
+
+```mermaid
+graph TB
+    subgraph Frontend["Frontend (React Native)"]
+        AppStart[アプリ起動]
+        PermissionRequest[位置権限要求]
+        TrackingStart[トラッキング開始]
+        BackgroundTask[バックグラウンドタスク<br/>1分ごと]
+        GetLocation[現在地取得]
+        SendLocation[位置情報送信]
+        NightQuest[夜アンケート]
+        FlagOn[フラグON]
+        LogScreen[ログ画面]
+        
+        AppStart --> PermissionRequest
+        PermissionRequest --> TrackingStart
+        TrackingStart --> BackgroundTask
+        BackgroundTask --> GetLocation
+        GetLocation --> SendLocation
+        NightQuest --> FlagOn
+        FlagOn --> LogScreen
+    end
+    
+    subgraph Backend["Backend (Supabase + PostGIS)"]
+        RecordRPC[record_location RPC]
+        UserLocCurrent[(user_locations_current<br/>最新位置)]
+        UserLocLogs[(user_location_logs<br/>位置履歴)]
+        CronJob[Cron 毎分実行<br/>run_encounter_tick]
+        EncounterSessions[(encounter_sessions<br/>すれ違いセッション)]
+        MyEncountersView[my_encounters View]
+        
+        RecordRPC --> UserLocCurrent
+        RecordRPC --> UserLocLogs
+        UserLocCurrent --> CronJob
+        CronJob -->|"ST_DWithin(250m)"| EncounterSessions
+        EncounterSessions --> MyEncountersView
+    end
+    
+    SendLocation -->|HTTP| RecordRPC
+    LogScreen -->|クエリ| MyEncountersView
+    
+    style Frontend fill:#E8F5E9
+    style Backend fill:#E3F2FD
+    style BackgroundTask fill:#FFF9C4
+    style CronJob fill:#FFE0B2
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Frontend (React Native)                       │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────┐    ┌──────────────────┐    ┌────────────────┐  │
-│  │ アプリ起動   │───▶│ 位置権限要求      │───▶│ トラッキング開始 │  │
-│  └─────────────┘    └──────────────────┘    └────────────────┘  │
-│                                                    │             │
-│                                                    ▼             │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │          バックグラウンドタスク（1分ごと）                │    │
-│  │          - 現在地を取得                                  │    │
-│  │          - Supabase に送信                               │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│                                                                  │
-│  ┌─────────────┐    ┌──────────────────┐    ┌────────────────┐  │
-│  │ 夜アンケート │───▶│ フラグ ON         │───▶│ ログ画面表示    │  │
-│  └─────────────┘    └──────────────────┘    └────────────────┘  │
-│                                                                  │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    Backend (Supabase + PostGIS)                  │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌───────────────────────┐    ┌────────────────────────────┐    │
-│  │ record_location RPC   │───▶│ user_locations_current     │    │
-│  │ - lat, lon, accuracy  │    │ (最新位置)                  │    │
-│  └───────────────────────┘    └────────────────────────────┘    │
-│                                            │                     │
-│                                            ▼                     │
-│  ┌───────────────────────┐    ┌────────────────────────────┐    │
-│  │ Cron（毎分実行）       │───▶│ encounter_sessions         │    │
-│  │ run_encounter_tick()  │    │ (すれ違いセッション)        │    │
-│  │ - 250m以内を検出      │    └────────────────────────────┘    │
-│  └───────────────────────┘                                      │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
+
+### データフロー詳細
+
+```mermaid
+sequenceDiagram
+    participant User as ユーザー
+    participant App as React Native App
+    participant BG as バックグラウンドタスク
+    participant Supabase as Supabase
+    participant PostGIS as PostGIS
+    participant Cron as Cron Job
+    
+    Note over User,Cron: 位置情報記録フロー
+    User->>App: アプリ起動
+    App->>App: 位置権限要求
+    App->>BG: トラッキング開始
+    
+    loop 1分ごと
+        BG->>BG: 現在地取得
+        BG->>Supabase: recordLocation(lat, lon)
+        Supabase->>PostGIS: INSERT user_location_logs
+        Supabase->>PostGIS: UPSERT user_locations_current
+    end
+    
+    Note over User,Cron: すれ違い検出フロー
+    loop 毎分
+        Cron->>PostGIS: run_encounter_tick()
+        PostGIS->>PostGIS: ST_DWithin(250m) で検索
+        PostGIS->>PostGIS: encounter_sessions UPSERT
+    end
+    
+    Note over User,Cron: すれ違い表示フロー
+    User->>App: 夜アンケート回答
+    App->>App: フラグON (AsyncStorage)
+    User->>App: ログ画面を開く
+    App->>Supabase: getMyEncounters()
+    Supabase->>PostGIS: SELECT my_encounters
+    PostGIS-->>Supabase: すれ違いリスト
+    Supabase-->>App: すれ違い+クエスト情報
+    App-->>User: すれ違いリスト表示
+```
+
+### コンポーネント構成
+
+```mermaid
+graph LR
+    subgraph Hooks["React Hooks"]
+        UseLocation[use-location]
+        UseNightQuest[use-night-questionnaire]
+    end
+    
+    subgraph Services["Services"]
+        LocationService[location-service<br/>バックグラウンドタスク]
+    end
+    
+    subgraph API["API Layer"]
+        LocationAPI[location API<br/>recordLocation<br/>getMyEncounters]
+        SupabaseClient[Supabase Client]
+    end
+    
+    subgraph Screens["Screens"]
+        AppLayout[app/_layout]
+        DailyMood[daily-mood]
+        LogScreenComp[log画面]
+    end
+    
+    AppLayout --> UseLocation
+    UseLocation --> LocationService
+    LocationService --> LocationAPI
+    LocationAPI --> SupabaseClient
+    
+    DailyMood --> UseNightQuest
+    LogScreenComp --> UseNightQuest
+    LogScreenComp --> LocationAPI
+    
+    style Hooks fill:#E1F5FE
+    style Services fill:#F3E5F5
+    style API fill:#FFF3E0
+    style Screens fill:#E8F5E9
 ```
 
 ---
