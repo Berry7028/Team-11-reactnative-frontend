@@ -83,3 +83,29 @@ export interface ApiError {
   error?: string;
   [key: string]: unknown;
 }
+
+// すれ違いセッション
+export interface EncounterSession {
+  id: number;
+  other_user_id: string;
+  other_user_name: string | null;
+  other_user_avatar: string | null;
+  started_at: string;
+  last_seen_at: string;
+  ended_at: string | null;
+  seen_minutes: number;
+  min_distance_m: number;
+  last_distance_m: number;
+}
+
+// 完了したクエスト
+export interface CompletedQuest {
+  id: number;
+  title: string;
+  completed_at: string;
+}
+
+// すれ違い + クエスト情報
+export interface EncounterWithQuests extends EncounterSession {
+  completed_quests: CompletedQuest[];
+}

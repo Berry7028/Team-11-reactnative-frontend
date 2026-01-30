@@ -1,0 +1,114 @@
+import { supabase } from "../supabase";
+import type { EncounterWithQuests, CompletedQuest } from "./types";
+
+/**
+ * 現在の位置情報を Supabase に記録
+ */
+export async function recordLocation(
+  latitude: number,
+  longitude: number,
+  accuracy?: number
+): Promise<void> {
+  const { error } = await supabase.rpc("record_location", {
+    p_lat: latitude,
+    p_lon: longitude,
+    p_accuracy_m: accuracy ?? null,
+    p_recorded_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    console.error("位置情報の記録に失敗:", error);
+    throw new Error(`位置情報の記録に失敗: ${error.message}`);
+  }
+}
+
+/**
+ * 自分のすれ違い一覧を取得（相手のユーザー情報とクエスト情報を含む）
+ */
+export async function getMyEncounters(): Promise<EncounterWithQuests[]> {
+  // まず my_encounters view から基本情報を取得
+  const { data: encounters, error: encountersError } = await supabase
+    .from("my_encounters")
+    .select("*")
+    .order("last_seen_at", { ascending: false });
+
+  if (encountersError) {
+    console.error("すれ違い情報の取得に失敗:", encountersError);
+    throw new Error(`すれ違い情報の取得に失敗: ${encountersError.message}`);
+  }
+
+  if (!encounters || encounters.length === 0) {
+    return [];
+  }
+
+  // 相手のユーザーIDリストを取得
+  const otherUserIds = encounters.map((e) => e.other_user_id);
+
+  // 相手のユーザー情報を取得（auth.users から display_name と avatar_url）
+  const { data: users, error: usersError } = await supabase.auth.admin.listUsers();
+
+  if (usersError) {
+    console.error("ユーザー情報の取得に失敗:", usersError);
+    // ユーザー情報が取れなくても続行
+  }
+
+  // ユーザー情報をマップ化
+  const userMap = new Map(
+    users?.users.map((user) => [
+      user.id,
+      {
+        display_name: user.user_metadata?.display_name ?? null,
+        avatar_url: user.user_metadata?.avatar_url ?? null,
+      },
+    ]) ?? []
+  );
+
+  // 今日の日付（YYYY-MM-DD形式）
+  const today = new Date().toISOString().split("T")[0];
+
+  // 各すれ違いに対して、相手の今日完了したクエストを取得
+  const encountersWithQuests: EncounterWithQuests[] = await Promise.all(
+    encounters.map(async (encounter) => {
+      const userInfo = userMap.get(encounter.other_user_id);
+
+      // 相手の今日完了したクエストを取得
+      const { data: quests, error: questsError } = await supabase
+        .from("quests")
+        .select("id, title, updated_at")
+        .eq("uuid", encounter.other_user_id)
+        .eq("completed", true)
+        .eq("day", today)
+        .order("updated_at", { ascending: false });
+
+      if (questsError) {
+        console.error(
+          `ユーザー ${encounter.other_user_id} のクエスト取得に失敗:`,
+          questsError
+        );
+      }
+
+      const completedQuests: CompletedQuest[] =
+        quests?.map((q) => ({
+          id: q.id,
+          title: q.title,
+          completed_at: q.updated_at,
+        })) ?? [];
+
+      return {
+        id: encounter.id,
+        other_user_id: encounter.other_user_id,
+        other_user_name: userInfo?.display_name ?? null,
+        other_user_avatar: userInfo?.avatar_url ?? null,
+        started_at: encounter.started_at,
+        last_seen_at: encounter.last_seen_at,
+        ended_at: encounter.ended_at,
+        seen_minutes: encounter.seen_minutes,
+        min_distance_m: encounter.min_distance_m,
+        last_distance_m: encounter.last_distance_m,
+        completed_quests: completedQuests,
+      };
+    })
+  );
+
+  return encountersWithQuests;
+}
