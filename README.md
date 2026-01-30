@@ -3,53 +3,76 @@
 
 > **重要: エージェントを使用する際は、まず [docs/skills.md](docs/skills.md) を読み込み、スキルを導入してください。**
 
-# Welcome to your Expo app 👋
+ユーザーのメンタルヘルスをサポートするモバイルアプリです。朝・夜の気分記録、AIによるクエスト提案、すれ違い（StreetPass）機能を提供します。
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 主な機能
 
-## Get started
+- 朝夜アンケートによる気分・体調の記録
+- AIレコメンデーションによるクエスト生成
+- クエストの取得・完了管理
+- 位置情報を利用した「すれ違い」ログ表示
 
-1. Install dependencies
+## 技術スタック
+
+- Expo + Expo Router
+- React Native / TypeScript
+- Supabase（認証・データ保存）
+- OpenAI API（クエスト生成）
+- expo-location / expo-task-manager（バックグラウンド位置更新）
+- expo-notifications（通知）
+
+## セットアップ
+
+1. 依存関係をインストール
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. 環境変数を準備
 
    ```bash
-   npx expo start
+   cp .env.example .env
    ```
 
-In the output, you'll find options to open the app in a
+   `.env` を開き、以下を設定してください。
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   - `EXPO_PUBLIC_SUPABASE_URL`
+   - `EXPO_PUBLIC_SUPABASE_KEY`
+   - `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+   - `EXPO_PUBLIC_API_URL`
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+3. アプリを起動
 
-## Get a fresh project
+   ```bash
+   npm run start
+   ```
 
-When you're ready, run:
+## スクリプト
 
-```bash
-npm run reset-project
+- `npm run start`: Expo 開発サーバー起動
+- `npm run android`: Android エミュレーターで起動
+- `npm run ios`: iOS シミュレーターで起動
+- `npm run web`: Web で起動
+- `npm run lint`: ESLint 実行
+
+## ドキュメント
+
+- `docs/API.md`: API 仕様とフロー（朝夜アンケート / AI / クエスト）
+- `docs/streetpass.md`: すれ違い機能の設計とデータフロー
+- `docs/AGENTS.md`: リポジトリガイドライン
+
+## ディレクトリ構成（抜粋）
+
+```
+app/           # Expo Router 画面とレイアウト
+components/    # 再利用可能なUI
+hooks/         # 共通フック
+lib/           # API / Supabase / 位置情報サービス
+assets/        # 画像などの静的アセット
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 補足
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- 位置情報の権限設定は `app.json` に定義しています（iOS/Androidともにバックグラウンド対応）。
+- すれ違い機能は夜アンケート完了後にログ画面で閲覧できます。
