@@ -7,7 +7,10 @@ const BACKGROUND_LOCATION_TASK = "BACKGROUND_LOCATION_TASK";
 // バックグラウンドタスクの定義
 TaskManager.defineTask(
   BACKGROUND_LOCATION_TASK,
-  async ({ data, error }: TaskManager.TaskManagerTaskBody<Location.LocationTaskEventData>) => {
+  async ({
+    data,
+    error,
+  }: TaskManager.TaskManagerTaskBody<{ locations: Location.LocationObject[] }>) => {
     if (error) {
       console.error("バックグラウンド位置情報タスクエラー:", error);
       return;
