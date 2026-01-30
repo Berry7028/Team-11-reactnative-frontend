@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import React, { useState } from "react";
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from "react-native";
 
+import { GrassBackground } from "@/components/grass-background";
 import { MoodInputSection, type MoodInputData } from "@/components/mood-input-section";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
@@ -101,12 +102,13 @@ export default function DailyMoodScreen() {
   if (timeOfDay === "night") {
     // 夜モード: 簡略版振り返りUI
     return (
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={{ backgroundColor: "#F0FFDF" }}
-        contentContainerStyle={{ paddingBottom: 32, gap: 20 }}
-      >
-        <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
+      <GrassBackground>
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          style={{ flex: 1, backgroundColor: "transparent" }}
+          contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}
+        >
+          <View style={{ paddingHorizontal: 20 }}>
           <View
             style={{
               flexDirection: "row",
@@ -211,23 +213,24 @@ export default function DailyMoodScreen() {
             )}
           </Pressable>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </GrassBackground>
     );
   }
 
   // 日中モード
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={{ backgroundColor: "#F0FFDF" }}
-      contentContainerStyle={{ paddingBottom: 28, gap: 20 }}
-    >
+    <GrassBackground>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ flex: 1, backgroundColor: "transparent" }}
+        contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
+      >
       <View
         style={{
           flexDirection: "row",
           justifyContent: "center",
           gap: 10,
-          paddingTop: 12,
         }}
       >
         <View
@@ -395,5 +398,6 @@ export default function DailyMoodScreen() {
         </Pressable>
       </View>
     </ScrollView>
+    </GrassBackground>
   );
 }

@@ -3,30 +3,17 @@ import { Link } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 
-import { IconSymbol } from "@/components/ui/icon-symbol";
+import { GrassBackground } from "@/components/grass-background";
+import { IconSymbol, type IconSymbolName } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
 import { useAuth } from "@/hooks/use-auth";
 import { getTodayQuests, type Quest } from "@/lib/api";
 
-const ACTIONS = [
+const ACTIONS: { label: string; icon: IconSymbolName; active?: boolean }[] = [
   { label: "元気づけて", icon: "sparkles", active: true },
   { label: "話を聞いて", icon: "ear" },
   { label: "落ち着きたい", icon: "heart.fill" },
   { label: "挑戦する", icon: "figure.walk" },
-];
-
-const FOOTPRINTS = [
-  { top: "18%", left: "12%", size: 22, color: "rgba(168, 223, 142, 0.5)" },
-  { top: "10%", right: "16%", size: 18, color: "rgba(168, 223, 142, 0.35)" },
-  { top: "68%", left: "8%", size: 24, color: "rgba(168, 223, 142, 0.45)" },
-  { top: "82%", right: "12%", size: 20, color: "rgba(168, 223, 142, 0.3)" },
-];
-
-const DUSTS = [
-  { top: "36%", left: "10%", size: 12, color: "rgba(156, 169, 134, 0.45)" },
-  { top: "18%", right: "26%", size: 10, color: "rgba(156, 169, 134, 0.35)" },
-  { top: "58%", right: "12%", size: 14, color: "rgba(156, 169, 134, 0.4)" },
-  { top: "78%", left: "34%", size: 11, color: "rgba(156, 169, 134, 0.3)" },
 ];
 
 export default function HomeScreen() {
@@ -72,15 +59,16 @@ export default function HomeScreen() {
   const progressPercent = quests.length > 0 ? (completedCount / quests.length) * 100 : 0;
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={{ backgroundColor: "#F0FFDF" }}
-      contentContainerStyle={{ paddingBottom: 32, gap: 20 }}
-      refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
-      }
-    >
-      <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+    <GrassBackground>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ flex: 1, backgroundColor: "transparent" }}
+        contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+        }
+      >
+        <View style={{ paddingHorizontal: 16 }}>
         <View
           style={{
             flexDirection: "row",
@@ -192,28 +180,6 @@ export default function HomeScreen() {
           minHeight: 340,
         }}
       >
-        <View
-          style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
-        >
-          {FOOTPRINTS.map((footprint, index) => (
-            <IconSymbol
-              key={`plant-${index}`}
-              name="leaf"
-              size={footprint.size}
-              color={footprint.color}
-              style={{ position: "absolute", ...footprint }}
-            />
-          ))}
-          {DUSTS.map((dust, index) => (
-            <IconSymbol
-              key={`dust-${index}`}
-              name="circle.fill"
-              size={dust.size}
-              color={dust.color}
-              style={{ position: "absolute", ...dust }}
-            />
-          ))}
-        </View>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <View
             style={{
@@ -501,5 +467,6 @@ export default function HomeScreen() {
         )}
       </View>
     </ScrollView>
+    </GrassBackground>
   );
 }
