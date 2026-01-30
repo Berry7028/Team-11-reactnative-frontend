@@ -10,6 +10,23 @@ interface StepSliderProps {
   onSelect: (id: string) => void;
 }
 
+const SELECTED_COLOR_POSITIVE = "#A8DF8E";
+const SELECTED_COLOR_NEGATIVE = "#FFAAB8";
+const SELECTED_TEXT_COLOR_POSITIVE = "#FFFFFF";
+const SELECTED_TEXT_COLOR_NEGATIVE = "#FFFFFF";
+
+function isPositiveOption(id: string): boolean {
+  const positiveIds = [
+    "great",
+    "good",
+    "ok",
+    "light",
+    "slightly-light",
+    "normal",
+  ];
+  return positiveIds.includes(id);
+}
+
 export function StepSlider({
   options,
   selectedId,
@@ -50,48 +67,57 @@ export function StepSlider({
             alignItems: "stretch",
           }}
         >
-          {options.map((option, index) => (
-            <Pressable
-              key={option.id}
-              onPress={() => onSelect(option.id)}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor:
-                  selectedId === option.id
-                    ? option.color
-                    : "rgba(255,255,255,0.9)",
-              }}
-            >
-              <Text
-                selectable
+          {options.map((option, index) => {
+            const isSelected = selectedId === option.id;
+            const isPositive = isPositiveOption(option.id);
+            const backgroundColor = isSelected
+              ? isPositive
+                ? SELECTED_COLOR_POSITIVE
+                : SELECTED_COLOR_NEGATIVE
+              : "rgba(255,255,255,0.9)";
+            const textColor = isSelected
+              ? isPositive
+                ? SELECTED_TEXT_COLOR_POSITIVE
+                : SELECTED_TEXT_COLOR_NEGATIVE
+              : "rgba(20,23,18,0.5)";
+
+            return (
+              <Pressable
+                key={option.id}
+                onPress={() => onSelect(option.id)}
                 style={{
-                  fontSize: 12,
-                  fontWeight: "700",
-                  color:
-                    selectedId === option.id
-                      ? option.text
-                      : "rgba(20,23,18,0.5)",
-                  fontFamily: Fonts.rounded,
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor,
                 }}
               >
-                {option.label}
-              </Text>
-              {index < options.length - 1 && (
-                <View
+                <Text
+                  selectable
                   style={{
-                    position: "absolute",
-                    right: 0,
-                    top: 6,
-                    bottom: 6,
-                    width: 1,
-                    backgroundColor: "rgba(20,23,18,0.12)",
+                    fontSize: 12,
+                    fontWeight: "700",
+                    color: textColor,
+                    fontFamily: Fonts.rounded,
                   }}
-                />
-              )}
-            </Pressable>
-          ))}
+                >
+                  {option.label}
+                </Text>
+                {index < options.length - 1 && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      top: 6,
+                      bottom: 6,
+                      width: 1,
+                      backgroundColor: "rgba(20,23,18,0.12)",
+                    }}
+                  />
+                )}
+              </Pressable>
+            );
+          })}
         </View>
       </View>
 

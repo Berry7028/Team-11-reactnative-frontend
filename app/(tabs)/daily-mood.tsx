@@ -416,9 +416,7 @@ export default function DailyMoodScreen() {
                       }}
                     />
                     <Image
-                      source={{
-                        uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuAnRhmMC5GjX_fjyyVvxSvdcURfBGboqlUhBitULtZAOxfPf3LTQB2zghqu2puS_Vf849jjUo759GxZ5Zt-xRCs2F78e_TzgvOr1FJelwwJpaB8PheAHy83gFCWbCSiFKLy_kZQZRsC_ggZvk9JXsUT_gRmTKxqK6O4BIfCHFbkAiUVfQ7rhbdcp9Cr-KGc7ZUdW_rWAvWC1Aevv6kQBErtZOXwFzYwinRNr9FVM606UNpFLuAZuiP6Ib37CmmTmzdVEj7Dva7AARhS",
-                      }}
+                      source={require("../../assets/images/bear.png")}
                       contentFit="contain"
                       style={{ width: 84, height: 84 }}
                     />
