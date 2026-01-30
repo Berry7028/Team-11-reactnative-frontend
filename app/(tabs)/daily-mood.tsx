@@ -7,6 +7,7 @@ import { MoodInputSection, type MoodInputData } from "@/components/mood-input-se
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
 import { useAuth } from "@/hooks/use-auth";
+import { useNightQuestionnaire } from "@/hooks/use-night-questionnaire";
 import {
   ApiRequestError,
   generateRecommendations,
@@ -23,6 +24,7 @@ function useTimeOfDay() {
 export default function DailyMoodScreen() {
   const timeOfDay = useTimeOfDay();
   const { session } = useAuth();
+  const { markAsCompleted } = useNightQuestionnaire();
   const [moodData, setMoodData] = useState<MoodInputData>({
     mood: null,
     condition: null,
@@ -87,7 +89,10 @@ export default function DailyMoodScreen() {
         free_text: moodData.freeText,
       });
 
-      Alert.alert("おやすみなさい", "今日もお疲れ様でした。ゆっくり休んでね。");
+      // 夜アンケート完了フラグを立てる
+      await markAsCompleted();
+
+      Alert.alert("おやすみなさい", "今日もお疲れ様でした。ゆっくり休んでね。\n\nログ画面ですれ違った仲間が見られます！");
     } catch (error) {
       const message =
         error instanceof ApiRequestError
