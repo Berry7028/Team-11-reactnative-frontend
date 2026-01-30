@@ -26,7 +26,7 @@ export const MOODS: StepOption<Mood>[] = [
   },
   {
     id: "ok",
-    label: "普通",
+    label: "ふつう",
     color: "#FFFFFF",
     text: "#141712",
     icon: "circle.fill",
