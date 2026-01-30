@@ -503,39 +503,6 @@ export default function DailyMoodScreen() {
         style={{ flex: 1, backgroundColor: "transparent" }}
         contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            gap: 10,
-          }}
-        >
-          <View
-            style={{
-              width: 28,
-              height: 6,
-              borderRadius: 999,
-              backgroundColor: "#A8DF8E",
-            }}
-          />
-          <View
-            style={{
-              width: 8,
-              height: 6,
-              borderRadius: 999,
-              backgroundColor: "rgba(168, 223, 142, 0.3)",
-            }}
-          />
-          <View
-            style={{
-              width: 8,
-              height: 6,
-              borderRadius: 999,
-              backgroundColor: "rgba(168, 223, 142, 0.3)",
-            }}
-          />
-        </View>
-
       {!hasSubmittedThisWindow && (
         <View style={{ paddingHorizontal: 24, alignItems: "center", gap: 18 }}>
           <View style={{ alignItems: "center", gap: 12 }}>

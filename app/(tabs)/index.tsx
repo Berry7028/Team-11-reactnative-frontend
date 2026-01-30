@@ -24,12 +24,6 @@ const MASCOT_IMAGES: Record<MascotStatus, number> = {
   Great: require("@/assets/mascot/great.png"),
 };
 
-const ACTIONS: { label: string; icon: IconSymbolName; active?: boolean }[] = [
-  { label: "元気づけて", icon: "sparkles", active: true },
-  { label: "話を聞いて", icon: "ear" },
-  { label: "落ち着きたい", icon: "heart.fill" },
-  { label: "挑戦する", icon: "figure.walk" },
-];
 
 export default function HomeScreen() {
   const { session } = useAuth();
@@ -100,124 +94,81 @@ export default function HomeScreen() {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, backgroundColor: "transparent" }}
-        contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}
+        contentContainerStyle={{ paddingBottom: 32, paddingTop: 48, gap: 24 }}
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
         }
       >
-        <View style={{ paddingHorizontal: 16 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <View
-            style={{
-              height: 44,
-              width: 44,
-              borderRadius: 999,
-              backgroundColor: "rgba(255,255,255,0.7)",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 2px 8px rgba(58, 77, 57, 0.1)",
-              borderCurve: "continuous",
-            }}
-          >
-            <IconSymbol name="person.fill" size={20} color="#3A4D39" />
-          </View>
-          <View style={{ alignItems: "center" }}>
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            >
-              <IconSymbol name="heart.fill" size={14} color="#A8DF8E" />
-              <Text
-                selectable
-                style={{
-                  fontSize: 10,
-                  fontWeight: "700",
-                  color: "rgba(58, 77, 57, 0.7)",
-                  letterSpacing: 1,
-                  fontFamily: Fonts.rounded,
-                }}
-              >
-                12日連続
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              height: 44,
-              width: 44,
-              borderRadius: 999,
-              backgroundColor: "rgba(255,255,255,0.7)",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 2px 8px rgba(58, 77, 57, 0.1)",
-              borderCurve: "continuous",
-            }}
-          >
-            <IconSymbol name="bell" size={20} color="#3A4D39" />
-          </View>
-        </View>
-      </View>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
-      >
-        {ACTIONS.map((action) => (
-          <View
-            key={action.label}
-            style={{
-              height: 40,
-              paddingHorizontal: 18,
-              borderRadius: 999,
-              backgroundColor: action.active
-                ? "#A8DF8E"
-                : "rgba(255,255,255,0.65)",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 6,
-              borderWidth: 1,
-              borderColor: action.active
-                ? "rgba(255,255,255,0.2)"
-                : "rgba(255,255,255,0.4)",
-              boxShadow: "0 2px 8px rgba(58, 77, 57, 0.12)",
-              borderCurve: "continuous",
-            }}
-          >
-            <IconSymbol
-              name={action.icon}
-              size={18}
-              color={action.active ? "#FFFFFF" : "#3A4D39"}
-            />
-            <Text
-              selectable
-              style={{
-                fontSize: 12,
-                fontWeight: action.active ? "700" : "600",
-                color: action.active ? "#FFFFFF" : "#3A4D39",
-                fontFamily: Fonts.rounded,
-              }}
-            >
-              {action.label}
-            </Text>
-          </View>
-        ))}
-      </ScrollView>
-
       <View
         style={{
           paddingHorizontal: 16,
           alignItems: "center",
           justifyContent: "center",
-          minHeight: 340,
+          minHeight: 360,
         }}
       >
-        <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <View style={{ alignItems: "center", justifyContent: "center", position: "relative" }}>
+          {/* 装飾用の小さなアイコン */}
+          <View
+            style={{
+              position: "absolute",
+              top: -20,
+              left: 40,
+              width: 32,
+              height: 32,
+              borderRadius: 999,
+              backgroundColor: "rgba(168, 223, 142, 0.2)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <IconSymbol name="sparkles" size={18} color="#A8DF8E" />
+          </View>
+          <View
+            style={{
+              position: "absolute",
+              top: 20,
+              right: 30,
+              width: 28,
+              height: 28,
+              borderRadius: 999,
+              backgroundColor: "rgba(168, 223, 142, 0.15)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <IconSymbol name="heart.fill" size={14} color="#A8DF8E" />
+          </View>
+          <View
+            style={{
+              position: "absolute",
+              bottom: -10,
+              left: 50,
+              width: 24,
+              height: 24,
+              borderRadius: 999,
+              backgroundColor: "rgba(168, 223, 142, 0.18)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <IconSymbol name="star.fill" size={12} color="#A8DF8E" />
+          </View>
+          <View
+            style={{
+              position: "absolute",
+              bottom: 30,
+              right: 40,
+              width: 30,
+              height: 30,
+              borderRadius: 999,
+              backgroundColor: "rgba(168, 223, 142, 0.2)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <IconSymbol name="leaf.fill" size={16} color="#A8DF8E" />
+          </View>
           <View
             style={{
               position: "absolute",
@@ -237,14 +188,14 @@ export default function HomeScreen() {
         </View>
         <View
           style={{
-            marginTop: 20,
-            backgroundColor: "rgba(255,255,255,0.9)",
-            paddingHorizontal: 20,
-            paddingVertical: 16,
+            marginTop: 24,
+            backgroundColor: "rgba(255,255,255,0.95)",
+            paddingHorizontal: 24,
+            paddingVertical: 20,
             borderRadius: 24,
-            borderWidth: 1,
-            borderColor: "#FFFFFF",
-            boxShadow: "0 8px 20px rgba(58, 77, 57, 0.08)",
+            borderWidth: 2,
+            borderColor: "rgba(168, 223, 142, 0.3)",
+            boxShadow: "0 8px 24px rgba(168, 223, 142, 0.15)",
             borderCurve: "continuous",
           }}
         >
@@ -282,11 +233,12 @@ export default function HomeScreen() {
               selectable
               style={{
                 color: "#3A4D39",
-                fontSize: 16,
+                fontSize: 17,
                 fontWeight: "700",
                 textAlign: "center",
-                lineHeight: 22,
+                lineHeight: 26,
                 fontFamily: Fonts.rounded,
+                letterSpacing: 0.2,
               }}
             >
               {mascotMessage}
@@ -295,16 +247,17 @@ export default function HomeScreen() {
         </View>
         <View
           style={{
-            marginTop: 14,
+            marginTop: 18,
             flexDirection: "row",
             alignItems: "center",
-            gap: 6,
-            backgroundColor: "rgba(255,255,255,0.45)",
-            paddingHorizontal: 16,
-            paddingVertical: 6,
+            gap: 8,
+            backgroundColor: "rgba(255,255,255,0.6)",
+            paddingHorizontal: 18,
+            paddingVertical: 8,
             borderRadius: 999,
             borderWidth: 1,
-            borderColor: "rgba(255,255,255,0.4)",
+            borderColor: "rgba(168, 223, 142, 0.2)",
+            boxShadow: "0 2px 8px rgba(168, 223, 142, 0.1)",
           }}
         >
           <IconSymbol
