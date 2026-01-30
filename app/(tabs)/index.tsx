@@ -1,13 +1,28 @@
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 import { GrassBackground } from "@/components/grass-background";
 import { IconSymbol, type IconSymbolName } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
 import { useAuth } from "@/hooks/use-auth";
-import { getTodayQuests, type Quest } from "@/lib/api";
+import { getMascotState, getTodayQuests, type Mascot, type MascotStatus, type Quest } from "@/lib/api";
+
+const MASCOT_IMAGES: Record<MascotStatus, number> = {
+  Sad: require("@/assets/mascot/sad.png"),
+  Bad: require("@/assets/mascot/bad.png"),
+  Okay: require("@/assets/mascot/okay.png"),
+  Good: require("@/assets/mascot/good.png"),
+  Great: require("@/assets/mascot/great.png"),
+};
 
 const ACTIONS: { label: string; icon: IconSymbolName; active?: boolean }[] = [
   { label: "元気づけて", icon: "sparkles", active: true },
@@ -21,6 +36,8 @@ export default function HomeScreen() {
   const [quests, setQuests] = useState<Quest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [mascot, setMascot] = useState<Mascot | null>(null);
+  const [isMascotLoading, setIsMascotLoading] = useState(true);
 
   const userUuid = session?.user?.id;
 
@@ -38,18 +55,35 @@ export default function HomeScreen() {
     }
   }, [userUuid]);
 
+  const fetchMascot = useCallback(async () => {
+    if (!userUuid) {
+      setIsMascotLoading(false);
+      return;
+    }
+
+    try {
+      const data = await getMascotState(userUuid);
+      setMascot(data);
+    } catch {
+      // エラーは静かに処理（ホーム画面なので）
+      setMascot(null);
+    }
+  }, [userUuid]);
+
   useEffect(() => {
     const load = async () => {
       setIsLoading(true);
-      await fetchQuests();
+      setIsMascotLoading(true);
+      await Promise.all([fetchQuests(), fetchMascot()]);
       setIsLoading(false);
+      setIsMascotLoading(false);
     };
     load();
-  }, [fetchQuests]);
+  }, [fetchMascot, fetchQuests]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await fetchQuests();
+    await Promise.all([fetchQuests(), fetchMascot()]);
     setIsRefreshing(false);
   };
 
@@ -57,6 +91,9 @@ export default function HomeScreen() {
   const currentQuests = quests.filter((q) => !q.completed).slice(0, 3);
   const completedCount = quests.filter((q) => q.completed).length;
   const progressPercent = quests.length > 0 ? (completedCount / quests.length) * 100 : 0;
+
+  const mascotStatus = mascot?.status ?? "Okay";
+  const mascotMessage = mascot?.message ?? "今日も一歩ずつ進もう。";
 
   return (
     <GrassBackground>
@@ -193,9 +230,7 @@ export default function HomeScreen() {
             }}
           />
           <Image
-            source={{
-              uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuBtUsib9ENztKVjMX28hWFZVGQNgDXAPaM0IPg0tDMj7MBKyXZYzMyiK5xx4O4c-fe-6Hkzyp4pNfN5QtkQ2QsUy4v6snS_Eo1KkDY4aln8xLTWHrbhcKbUz7nfK-1kFb1W6iafEHQMvt-MREpQEnwnanonycgvo2p2rkOCxziV_tX_M3_m04subRXhWYl0M328eAMlC1PTtND881h3W6Yq4pCVvdYK3DrJNfDW1VNKVbHFQAopliOkePwYj-R0jhiRWxVPA5gU0W8P",
-            }}
+            source={MASCOT_IMAGES[mascotStatus]}
             contentFit="contain"
             style={{ width: 220, height: 220 }}
           />
@@ -228,19 +263,35 @@ export default function HomeScreen() {
               borderColor: "#FFFFFF",
             }}
           />
-          <Text
-            selectable
-            style={{
-              color: "#3A4D39",
-              fontSize: 16,
-              fontWeight: "700",
-              textAlign: "center",
-              lineHeight: 22,
-              fontFamily: Fonts.rounded,
-            }}
-          >
-            「今日はゆっくり過ごそうね」
-          </Text>
+          {isMascotLoading ? (
+            <View style={{ alignItems: "center" }}>
+              <ActivityIndicator size="small" color="#A8DF8E" />
+              <Text
+                style={{
+                  marginTop: 8,
+                  fontSize: 12,
+                  color: "rgba(58, 77, 57, 0.6)",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                メッセージ読み込み中...
+              </Text>
+            </View>
+          ) : (
+            <Text
+              selectable
+              style={{
+                color: "#3A4D39",
+                fontSize: 16,
+                fontWeight: "700",
+                textAlign: "center",
+                lineHeight: 22,
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              {mascotMessage}
+            </Text>
+          )}
         </View>
         <View
           style={{

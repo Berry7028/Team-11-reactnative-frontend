@@ -8,7 +8,7 @@ export {
 } from "./questionnaire";
 
 // AI API
-export { generateRecommendations, getHint } from "./ai";
+export { generateRecommendations, getMascotState, getHint } from "./ai";
 
 // Quests API
 export { getTodayQuests, toggleQuestComplete } from "./quests";

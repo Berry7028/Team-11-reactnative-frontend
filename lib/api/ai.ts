@@ -2,6 +2,7 @@ import { apiRequest } from "./client";
 import type {
   HintRequest,
   HintResponse,
+  Mascot,
   RecommendationsResponse,
 } from "./types";
 
@@ -13,6 +14,16 @@ export async function generateRecommendations(
 ): Promise<RecommendationsResponse> {
   return apiRequest<RecommendationsResponse>("/api/ai/recommendations/", {
     method: "POST",
+    userUuid,
+  });
+}
+
+/**
+ * マスコット状態を取得する
+ */
+export async function getMascotState(userUuid: string): Promise<Mascot> {
+  return apiRequest<Mascot>("/api/ai/mascot-state/", {
+    method: "GET",
     userUuid,
   });
 }
