@@ -13,6 +13,9 @@ export { generateRecommendations, getMascotState, getHint } from "./ai";
 // Quests API
 export { getTodayQuests, toggleQuestComplete } from "./quests";
 
+// Location API
+export { recordLocation, getMyEncounters } from "./location";
+
 // Types
 export type {
   Mood,
@@ -27,4 +30,7 @@ export type {
   HintRequest,
   HintResponse,
   ApiError,
+  EncounterSession,
+  EncounterWithQuests,
+  CompletedQuest,
 } from "./types";
