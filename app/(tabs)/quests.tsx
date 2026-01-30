@@ -2,13 +2,13 @@ import { Image } from 'expo-image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { ApiRequestError, getTodayQuests, toggleQuestComplete, type Quest } from '@/lib/api';
 
 // クエストカテゴリのアイコンマッピング
-const QUEST_ICONS: Record<string, string> = {
+const QUEST_ICONS: Record<string, IconSymbolName> = {
   relaxation: 'sparkles',
   relax: 'cup.and.saucer.fill',
   refresh: 'sun.max.fill',
