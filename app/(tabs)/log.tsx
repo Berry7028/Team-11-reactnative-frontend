@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { GrassBackground } from '@/components/grass-background';
@@ -8,14 +10,38 @@ import { Fonts } from '@/constants/theme';
 import { useNightQuestionnaire } from '@/hooks/use-night-questionnaire';
 import { getMyEncounters, type EncounterWithQuests } from '@/lib/api';
 
+const DEBUG_SHOW_ENCOUNTERS_WITHOUT_NIGHT_KEY = 'debug:showEncountersWithoutNight';
+
+const getDebugShowEncountersWithoutNight = async (): Promise<boolean> => {
+  try {
+    const raw = await AsyncStorage.getItem(DEBUG_SHOW_ENCOUNTERS_WITHOUT_NIGHT_KEY);
+    return raw === 'true';
+  } catch {
+    return false;
+  }
+};
+
 export default function LogScreen() {
   const { isCompleted, isLoading: isLoadingQuestionnaire } = useNightQuestionnaire();
   const [encounters, setEncounters] = useState<EncounterWithQuests[]>([]);
   const [isLoadingEncounters, setIsLoadingEncounters] = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
+
+  // デバッグモードの状態を読み込む（画面がフォーカスされるたびに再読み込み）
+  useFocusEffect(
+    useCallback(() => {
+      const loadDebugMode = async () => {
+        const isDebugMode = await getDebugShowEncountersWithoutNight();
+        setDebugMode(isDebugMode);
+      };
+      loadDebugMode();
+    }, [])
+  );
 
   // すれ違い情報を取得
   useEffect(() => {
-    if (isCompleted && !isLoadingQuestionnaire) {
+    // デバッグモードがON、または夜アンケートが完了している場合に取得
+    if ((debugMode || isCompleted) && !isLoadingQuestionnaire) {
       const loadEncounters = async () => {
         setIsLoadingEncounters(true);
         try {
@@ -36,9 +62,10 @@ export default function LogScreen() {
 
       loadEncounters();
     }
-  }, [isCompleted, isLoadingQuestionnaire]);
-  // すれ違いが未ロック（夜アンケート未回答）の場合
-  if (!isCompleted) {
+  }, [isCompleted, isLoadingQuestionnaire, debugMode]);
+
+  // すれ違いが未ロック（夜アンケート未回答）かつデバッグモードがOFFの場合
+  if (!isCompleted && !debugMode) {
     return (
       <GrassBackground>
         <ScrollView
