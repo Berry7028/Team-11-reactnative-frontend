@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
 import { IconSymbol, type IconSymbolName } from "@/components/ui/icon-symbol";
@@ -21,11 +21,18 @@ const MOODS: {
     icon: "sun.max.fill",
   },
   {
+    id: "good",
+    label: "いい感じ",
+    color: "#D9F2B0",
+    text: "#2E5B2E",
+    icon: "sparkles",
+  },
+  {
     id: "ok",
     label: "普通",
     color: "#FFFFFF",
     text: "#141712",
-    icon: "sparkles",
+    icon: "circle.fill",
   },
   {
     id: "meh",
@@ -43,7 +50,7 @@ const MOODS: {
   },
 ];
 
-// API の Condition 型とマッピング
+// API の Condition 型と「今の体調」に関するマッピング
 const BODY_STATES: {
   id: string;
   label: Condition;
@@ -53,10 +60,17 @@ const BODY_STATES: {
 }[] = [
   {
     id: "light",
-    label: "軽い",
+    label: "絶好調",
     color: "#FFFFFF",
     text: "#141712",
     icon: "wind",
+  },
+  {
+    id: "slightly-light",
+    label: "いい感じ",
+    color: "#F1FAEA",
+    text: "#2E5B2E",
+    icon: "leaf",
   },
   {
     id: "normal",
@@ -67,19 +81,20 @@ const BODY_STATES: {
   },
   {
     id: "tired",
-    label: "だるい",
+    label: "少しだるい",
     color: "#FFE9C7",
     text: "#7A4E00",
     icon: "moon.stars.fill",
   },
   {
     id: "pain",
-    label: "痛い",
+    label: "つらい",
     color: "#FFDADA",
     text: "#B22222",
-    icon: "bandage.fill",
+    icon: "heart.fill",
   },
 ];
+
 
 export interface MoodInputData {
   mood: Mood | null;
@@ -92,6 +107,116 @@ interface MoodInputSectionProps {
   showMoodSelector?: boolean;
   showBodySelector?: boolean;
   onChange?: (data: MoodInputData) => void;
+}
+
+interface StepOption {
+  id: string;
+  label: string;
+  color: string;
+  text: string;
+  icon: IconSymbolName;
+}
+
+interface StepSliderProps {
+  options: StepOption[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  accentColor: string;
+  emptyLabel: string;
+}
+
+function StepSlider({
+  options,
+  selectedId,
+  onSelect,
+  accentColor,
+  emptyLabel,
+}: StepSliderProps) {
+  const [trackWidth, setTrackWidth] = useState(0);
+  const selectedIndex = useMemo(
+    () => options.findIndex((item) => item.id === selectedId),
+    [options, selectedId],
+  );
+  const stepWidth = trackWidth > 0 ? trackWidth / (options.length - 1) : 0;
+
+  const handlePressAt = (x: number) => {
+    if (!stepWidth) return;
+    const index = Math.max(
+      0,
+      Math.min(options.length - 1, Math.round(x / stepWidth)),
+    );
+    onSelect(options[index].id);
+  };
+
+  return (
+    <View style={{ gap: 14 }}>
+      <View
+        onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+        onStartShouldSetResponder={() => true}
+        onResponderRelease={(event) =>
+          handlePressAt(event.nativeEvent.locationX)
+        }
+        style={{ height: 48, justifyContent: "center" }}
+      >
+        <View
+          style={{
+            height: 40,
+            borderRadius: 8,
+            backgroundColor: "#FFFFFF",
+            borderWidth: 1,
+            borderColor: "rgba(20, 23, 18, 0.12)",
+            boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
+            overflow: "hidden",
+            flexDirection: "row",
+            alignItems: "stretch",
+          }}
+        >
+          {options.map((option, index) => (
+            <Pressable
+              key={option.id}
+              onPress={() => onSelect(option.id)}
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor:
+                  selectedId === option.id
+                    ? option.color
+                    : "rgba(255,255,255,0.9)",
+              }}
+            >
+              <Text
+                selectable
+                style={{
+                  fontSize: 12,
+                  fontWeight: "700",
+                  color:
+                    selectedId === option.id ? option.text : "rgba(20,23,18,0.5)",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                {option.label}
+              </Text>
+              {index < options.length - 1 && (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: 6,
+                    bottom: 6,
+                    width: 1,
+                    backgroundColor: "rgba(20,23,18,0.12)",
+                  }}
+                />
+              )}
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      <View style={{ height: 2 }} />
+    </View>
+  );
 }
 
 export function MoodInputSection({
@@ -167,49 +292,70 @@ export function MoodInputSection({
             >
               今の気分
             </Text>
-          </View>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-            {MOODS.map((mood, index) => (
-              <Pressable
-                key={mood.id}
-                onPress={() => handleMoodSelect(mood.id)}
+            {selectedMoodId ? (
+              <View
                 style={{
-                  flexBasis: "48%",
-                  minWidth: "48%",
-                  height: 56,
-                  borderRadius: 20,
-                  backgroundColor: mood.color,
-                  alignItems: "center",
-                  justifyContent: "center",
+                  marginLeft: 8,
                   flexDirection: "row",
-                  gap: 8,
+                  alignItems: "center",
+                  gap: 6,
+                  paddingHorizontal: 10,
+                  paddingVertical: 4,
+                  borderRadius: 999,
+                  backgroundColor:
+                    MOODS.find((mood) => mood.id === selectedMoodId)?.color ??
+                    "#FFFFFF",
                   borderWidth: 1,
-                  borderColor:
-                    selectedMoodId === mood.id
-                      ? "#6CBF6A"
-                      : index === 1
-                        ? "rgba(168, 223, 142, 0.2)"
-                        : "rgba(255,255,255,0.4)",
-                  boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
-                  borderCurve: "continuous",
-                  transform: [{ scale: selectedMoodId === mood.id ? 1.01 : 1 }],
+                  borderColor: "rgba(20, 23, 18, 0.12)",
                 }}
               >
-                <IconSymbol name={mood.icon} size={18} color={mood.text} />
+                <IconSymbol
+                  name={
+                    MOODS.find((mood) => mood.id === selectedMoodId)?.icon ??
+                    "circle.fill"
+                  }
+                  size={12}
+                  color={
+                    MOODS.find((mood) => mood.id === selectedMoodId)?.text ??
+                    "#141712"
+                  }
+                />
                 <Text
                   selectable
                   style={{
-                    color: mood.text,
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: "700",
+                    color:
+                      MOODS.find((mood) => mood.id === selectedMoodId)?.text ??
+                      "#141712",
                     fontFamily: Fonts.rounded,
                   }}
                 >
-                  {mood.label}
+                  {MOODS.find((mood) => mood.id === selectedMoodId)?.label}
                 </Text>
-              </Pressable>
-            ))}
+              </View>
+            ) : (
+              <Text
+                selectable
+                style={{
+                  marginLeft: 8,
+                  fontSize: 11,
+                  color: "#718268",
+                  fontWeight: "600",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                5段階で選んでね
+              </Text>
+            )}
           </View>
+          <StepSlider
+            options={MOODS}
+            selectedId={selectedMoodId}
+            onSelect={handleMoodSelect}
+            accentColor="#6CBF6A"
+            emptyLabel="5段階で選んでね"
+          />
         </View>
       )}
 
@@ -235,51 +381,77 @@ export function MoodInputSection({
             >
               今の体調
             </Text>
-          </View>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-            {BODY_STATES.map((state, index) => (
-              <Pressable
-                key={state.id}
-                onPress={() => handleBodySelect(state.id)}
+            {selectedBodyStateId ? (
+              <View
                 style={{
-                  flexBasis: "48%",
-                  minWidth: "48%",
-                  height: 56,
-                  borderRadius: 20,
-                  backgroundColor: state.color,
-                  alignItems: "center",
-                  justifyContent: "center",
+                  marginLeft: 8,
                   flexDirection: "row",
-                  gap: 8,
+                  alignItems: "center",
+                  gap: 6,
+                  paddingHorizontal: 10,
+                  paddingVertical: 4,
+                  borderRadius: 999,
+                  backgroundColor:
+                    BODY_STATES.find((state) => state.id === selectedBodyStateId)
+                      ?.color ?? "#FFFFFF",
                   borderWidth: 1,
-                  borderColor:
-                    selectedBodyStateId === state.id
-                      ? "#6CBF6A"
-                      : index === 0
-                        ? "rgba(168, 223, 142, 0.2)"
-                        : "rgba(255,255,255,0.4)",
-                  boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
-                  borderCurve: "continuous",
-                  transform: [
-                    { scale: selectedBodyStateId === state.id ? 1.01 : 1 },
-                  ],
+                  borderColor: "rgba(20, 23, 18, 0.12)",
                 }}
               >
-                <IconSymbol name={state.icon} size={18} color={state.text} />
+                <IconSymbol
+                  name={
+                    BODY_STATES.find(
+                      (state) => state.id === selectedBodyStateId,
+                    )?.icon ?? "circle.fill"
+                  }
+                  size={12}
+                  color={
+                    BODY_STATES.find(
+                      (state) => state.id === selectedBodyStateId,
+                    )?.text ?? "#141712"
+                  }
+                />
                 <Text
                   selectable
                   style={{
-                    color: state.text,
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: "700",
+                    color:
+                      BODY_STATES.find(
+                        (state) => state.id === selectedBodyStateId,
+                      )?.text ?? "#141712",
                     fontFamily: Fonts.rounded,
                   }}
                 >
-                  {state.label}
+                  {
+                    BODY_STATES.find(
+                      (state) => state.id === selectedBodyStateId,
+                    )?.label
+                  }
                 </Text>
-              </Pressable>
-            ))}
+              </View>
+            ) : (
+              <Text
+                selectable
+                style={{
+                  marginLeft: 8,
+                  fontSize: 11,
+                  color: "#718268",
+                  fontWeight: "600",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                5段階で選んでね
+              </Text>
+            )}
           </View>
+          <StepSlider
+            options={BODY_STATES}
+            selectedId={selectedBodyStateId}
+            onSelect={handleBodySelect}
+            accentColor="#6CBF6A"
+            emptyLabel="5段階で選んでね"
+          />
         </View>
       )}
 

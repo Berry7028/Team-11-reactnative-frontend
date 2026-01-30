@@ -1,8 +1,18 @@
 // 気分の選択肢
-export type Mood = "絶好調" | "普通" | "モヤモヤ" | "つらい";
+export type Mood =
+  | "絶好調"
+  | "いい感じ"
+  | "普通"
+  | "モヤモヤ"
+  | "つらい";
 
 // 体調の選択肢
-export type Condition = "軽い" | "ふつう" | "だるい" | "痛い";
+export type Condition =
+  | "絶好調"
+  | "いい感じ"
+  | "ふつう"
+  | "少しだるい"
+  | "つらい";
 
 // マスコットの状態
 export type MascotStatus = "Sad" | "Bad" | "Okay" | "Good" | "Great";
