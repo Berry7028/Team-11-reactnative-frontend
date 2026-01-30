@@ -16,6 +16,13 @@ export { getTodayQuests, toggleQuestComplete } from "./quests";
 // Location API
 export { recordLocation, getMyEncounters } from "./location";
 
+// Stamps API（お疲れ様スタンプ）
+export {
+  sendThanksStamp,
+  getThanksStampsReceivedCountToday,
+  getThanksStampSentByEncounterIds,
+} from "./stamps";
+
 // User API
 export { getMyProfile, updateMyAvatar } from "./user";
 export type { MyProfile } from "./user";

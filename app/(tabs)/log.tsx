@@ -1,14 +1,29 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GrassBackground } from '@/components/grass-background';
 import { AvatarImage } from '@/components/ui/avatar-image';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { useNightQuestionnaire } from '@/hooks/use-night-questionnaire';
-import { getMyEncounters, type EncounterWithQuests } from '@/lib/api';
+import {
+  getMyEncounters,
+  getThanksStampSentByEncounterIds,
+  getThanksStampsReceivedCountToday,
+  sendThanksStamp,
+  type EncounterWithQuests,
+} from '@/lib/api';
 
 const DEBUG_SHOW_ENCOUNTERS_WITHOUT_NIGHT_KEY = 'debug:showEncountersWithoutNight';
 
@@ -21,11 +36,22 @@ const getDebugShowEncountersWithoutNight = async (): Promise<boolean> => {
   }
 };
 
+const CARD_ROW_MARGIN = 16;
+const CARD_GAP = 14;
+
 export default function LogScreen() {
   const { isCompleted, isLoading: isLoadingQuestionnaire } = useNightQuestionnaire();
   const [encounters, setEncounters] = useState<EncounterWithQuests[]>([]);
   const [isLoadingEncounters, setIsLoadingEncounters] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
+  const [thanksStampsCount, setThanksStampsCount] = useState(0);
+  const [stampSentIds, setStampSentIds] = useState<Set<number>>(new Set());
+  const [sendingEncounterId, setSendingEncounterId] = useState<number | null>(null);
+
+  const { width: windowWidth } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const contentWidth = windowWidth - insets.left - insets.right;
+  const cardWidth = Math.floor((contentWidth - CARD_ROW_MARGIN * 2 - CARD_GAP) / 2);
 
   // デバッグモードの状態を読み込む（画面がフォーカスされるたびに再読み込み）
   useFocusEffect(
@@ -64,6 +90,23 @@ export default function LogScreen() {
     }
   }, [isCompleted, isLoadingQuestionnaire, debugMode]);
 
+  // ログに表示される人が変わったときにスタンプ表示をリセット（件数・送付済み）
+  useEffect(() => {
+    if (!isLoadingEncounters) {
+      const loadStampData = async () => {
+        const [count, sentSet] = await Promise.all([
+          getThanksStampsReceivedCountToday(),
+          encounters.length > 0
+            ? getThanksStampSentByEncounterIds(encounters.map((e) => e.id))
+            : Promise.resolve(new Set<number>()),
+        ]);
+        setThanksStampsCount(count);
+        setStampSentIds(sentSet);
+      };
+      loadStampData();
+    }
+  }, [encounters, isLoadingEncounters]);
+
   // すれ違いが未ロック（夜アンケート未回答）かつデバッグモードがOFFの場合
   if (!isCompleted && !debugMode) {
     return (
@@ -71,7 +114,7 @@ export default function LogScreen() {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={{ flex: 1, backgroundColor: 'transparent' }}
-          contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}>
+          contentContainerStyle={{ paddingBottom: 32, paddingTop: 20, gap: 20 }}>
           <View style={{ paddingHorizontal: 24, paddingTop: 40, alignItems: 'center', gap: 16 }}>
             <View
               style={{
@@ -114,13 +157,26 @@ export default function LogScreen() {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, backgroundColor: 'transparent' }}
-        contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}>
+        contentContainerStyle={{
+          paddingBottom: 32,
+          paddingTop: 20,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+          gap: 20,
+          flexGrow: 0,
+        }}>
         {/* 今日のサマリー */}
-        <View style={{ flexDirection: 'row', marginHorizontal: 16, gap: 14 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginHorizontal: CARD_ROW_MARGIN,
+            gap: CARD_GAP,
+            alignItems: 'stretch',
+          }}>
           <View
             style={{
-              flex: 1,
-              minWidth: 0,
+              width: cardWidth,
+              minHeight: 120,
               paddingVertical: 16,
               paddingHorizontal: 14,
               alignItems: 'center',
@@ -139,8 +195,10 @@ export default function LogScreen() {
             <View
               style={{
                 marginBottom: 4,
-                paddingVertical: 6,
-                paddingHorizontal: 8,
+                width: 38,
+                height: 34,
+                alignItems: 'center',
+                justifyContent: 'center',
                 borderRadius: 12,
                 backgroundColor: 'rgba(125, 161, 94, 0.08)',
               }}>
@@ -154,6 +212,7 @@ export default function LogScreen() {
                 color: '#718268',
                 fontFamily: Fonts.rounded,
                 letterSpacing: 0.5,
+                textAlign: 'center',
               }}>
               今日すれ違った
             </Text>
@@ -164,14 +223,16 @@ export default function LogScreen() {
                 fontWeight: '700',
                 color: '#141712',
                 fontFamily: Fonts.rounded,
+                textAlign: 'center',
+                lineHeight: 28,
               }}>
               {encounters.length}人
             </Text>
           </View>
           <View
             style={{
-              flex: 1,
-              minWidth: 0,
+              width: cardWidth,
+              minHeight: 120,
               paddingVertical: 16,
               paddingHorizontal: 14,
               alignItems: 'center',
@@ -190,8 +251,10 @@ export default function LogScreen() {
             <View
               style={{
                 marginBottom: 4,
-                paddingVertical: 6,
-                paddingHorizontal: 8,
+                width: 38,
+                height: 34,
+                alignItems: 'center',
+                justifyContent: 'center',
                 borderRadius: 12,
                 backgroundColor: 'rgba(255, 170, 184, 0.12)',
               }}>
@@ -205,6 +268,7 @@ export default function LogScreen() {
                 color: '#718268',
                 fontFamily: Fonts.rounded,
                 letterSpacing: 0.5,
+                textAlign: 'center',
               }}>
               お疲れ様スタンプ
             </Text>
@@ -215,8 +279,10 @@ export default function LogScreen() {
                 fontWeight: '700',
                 color: '#332D2E',
                 fontFamily: Fonts.rounded,
+                textAlign: 'center',
+                lineHeight: 28,
               }}>
-              0件
+              {thanksStampsCount}件
             </Text>
           </View>
         </View>
@@ -233,6 +299,8 @@ export default function LogScreen() {
           <View style={{ paddingHorizontal: 16, gap: 14 }}>
             {encounters.map((encounter) => {
               const displayName = encounter.other_user_name || '旅の仲間';
+              const stampSent = stampSentIds.has(encounter.id);
+              const sending = sendingEncounterId === encounter.id;
 
               // 今日達成したクエストを表示（最大3件）
               const questsToShow = encounter.completed_quests.slice(0, 3);
@@ -240,6 +308,22 @@ export default function LogScreen() {
                 questsToShow.length > 0
                   ? questsToShow.map((q) => `『${q.title}』`).join('、') + 'を達成しました'
                   : '今日のクエストに挑戦中';
+
+              const handleThanksStamp = async () => {
+                if (stampSent || sending) return;
+                setSendingEncounterId(encounter.id);
+                try {
+                  await sendThanksStamp(encounter.id, encounter.other_user_id);
+                  setStampSentIds((prev) => new Set(prev).add(encounter.id));
+                } catch (err) {
+                  Alert.alert(
+                    '送信できませんでした',
+                    err instanceof Error ? err.message : 'お疲れ様スタンプの送信に失敗しました。'
+                  );
+                } finally {
+                  setSendingEncounterId(null);
+                }
+              };
 
               return (
                 <View
@@ -295,22 +379,34 @@ export default function LogScreen() {
                   </View>
                   <View style={{ alignItems: 'center', gap: 4 }}>
                     <Pressable
+                      onPress={handleThanksStamp}
+                      disabled={stampSent || sending}
                       style={{
                         height: 44,
                         width: 44,
                         borderRadius: 999,
-                        backgroundColor: 'rgba(255, 170, 184, 0.12)',
+                        backgroundColor: stampSent
+                          ? 'rgba(216, 125, 142, 0.25)'
+                          : 'rgba(255, 170, 184, 0.12)',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}>
-                      <IconSymbol name="heart.fill" size={18} color="#FFAAB8" />
+                      {sending ? (
+                        <ActivityIndicator size="small" color="#D87D8E" />
+                      ) : (
+                        <IconSymbol
+                          name="heart.fill"
+                          size={18}
+                          color={stampSent ? '#D87D8E' : '#FFAAB8'}
+                        />
+                      )}
                     </Pressable>
                     <Text
                       selectable
                       style={{
                         fontSize: 10,
                         fontWeight: '700',
-                        color: '#FFAAB8',
+                        color: stampSent ? '#D87D8E' : '#FFAAB8',
                         fontFamily: Fonts.rounded,
                       }}>
                       お疲れ様
