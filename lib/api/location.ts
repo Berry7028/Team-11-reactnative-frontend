@@ -44,8 +44,11 @@ export async function getMyEncounters(): Promise<EncounterWithQuests[]> {
   // 相手のユーザーIDリストを取得
   const otherUserIds = encounters.map((e) => e.other_user_id);
 
-  // 相手のユーザー情報を取得（auth.users から display_name と avatar_url）
-  const { data: users, error: usersError } = await supabase.auth.admin.listUsers();
+  // 相手のユーザー情報を public.users から取得
+  const { data: users, error: usersError } = await supabase
+    .from("users")
+    .select("uuid, display_name, avatar_url")
+    .in("uuid", otherUserIds);
 
   if (usersError) {
     console.error("ユーザー情報の取得に失敗:", usersError);
@@ -54,11 +57,11 @@ export async function getMyEncounters(): Promise<EncounterWithQuests[]> {
 
   // ユーザー情報をマップ化
   const userMap = new Map(
-    users?.users.map((user) => [
-      user.id,
+    users?.map((row) => [
+      row.uuid,
       {
-        display_name: user.user_metadata?.display_name ?? null,
-        avatar_url: user.user_metadata?.avatar_url ?? null,
+        display_name: row.display_name ?? null,
+        avatar_url: row.avatar_url ?? null,
       },
     ]) ?? []
   );
