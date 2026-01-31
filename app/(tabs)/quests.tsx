@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
+import { GrassBackground } from '@/components/grass-background';
 import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
@@ -84,13 +85,14 @@ export default function QuestsScreen() {
 
   const completedCount = quests.filter((q) => q.completed).length;
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={{ backgroundColor: '#FFF9FA' }}
-      contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
-      refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
-      }>
+    <GrassBackground>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ flex: 1, backgroundColor: 'transparent' }}
+        contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+        }>
       <View style={{ paddingHorizontal: 16 }}>
         <Text
           selectable
@@ -181,7 +183,7 @@ export default function QuestsScreen() {
         </View>
       ) : quests.length === 0 ? (
         <View style={{ paddingHorizontal: 16, paddingVertical: 40, alignItems: 'center' }}>
-          <IconSymbol name="sparkles" size={48} color="#FFD8DF" />
+          <IconSymbol name="sparkles" size={48} color="#FFAAB8" />
           <Text
             style={{
               marginTop: 16,
@@ -325,6 +327,7 @@ export default function QuestsScreen() {
           })}
         </View>
       )}
-    </ScrollView>
+      </ScrollView>
+    </GrassBackground>
   );
 }
