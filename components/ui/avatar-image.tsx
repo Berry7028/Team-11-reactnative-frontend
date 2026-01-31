@@ -42,7 +42,7 @@ export function AvatarImage({
   if (showDefault) {
     return (
       <View style={containerStyle}>
-        <IconSymbol name="person.fill" size={size * 0.45} color="#FFAAB8" />
+        <IconSymbol name="person.fill" size={size * 0.45} color="#A8DF8E" />
       </View>
     );
   }
