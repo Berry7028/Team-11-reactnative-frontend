@@ -114,7 +114,9 @@ export default function LogScreen() {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={{ flex: 1, backgroundColor: 'transparent' }}
-          contentContainerStyle={{ paddingBottom: 32, paddingTop: 20, gap: 20 }}>
+          contentContainerStyle={{ paddingBottom: 32, paddingTop: 20, gap: 20 }}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}>
           <View style={{ paddingHorizontal: 24, paddingTop: 40, alignItems: 'center', gap: 16 }}>
             <View
               style={{
@@ -122,7 +124,7 @@ export default function LogScreen() {
                 borderRadius: 999,
                 backgroundColor: 'rgba(168, 223, 142, 0.15)',
               }}>
-              <IconSymbol name="lock.fill" size={48} color="#A8DF8E" />
+              <IconSymbol name="lock.fill" size={48} color="#FFAAB8" />
             </View>
             <Text
               selectable
@@ -164,7 +166,9 @@ export default function LogScreen() {
           paddingRight: insets.right,
           gap: 20,
           flexGrow: 0,
-        }}>
+        }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}>
         {/* 今日のサマリー */}
         <View
           style={{
@@ -290,7 +294,7 @@ export default function LogScreen() {
         {/* ローディング中 */}
         {isLoadingEncounters && (
           <View style={{ paddingVertical: 40, alignItems: 'center' }}>
-            <ActivityIndicator size="large" color="#A8DF8E" />
+            <ActivityIndicator size="large" color="#FFAAB8" />
           </View>
         )}
 
@@ -392,7 +396,7 @@ export default function LogScreen() {
                         justifyContent: 'center',
                       }}>
                       {sending ? (
-                        <ActivityIndicator size="small" color="#D87D8E" />
+                        <ActivityIndicator size="small" color="#FFAAB8" />
                       ) : (
                         <IconSymbol
                           name="heart.fill"
@@ -421,7 +425,7 @@ export default function LogScreen() {
         {/* すれ違いがない場合 */}
         {!isLoadingEncounters && encounters.length === 0 && (
           <View style={{ paddingHorizontal: 24, paddingTop: 20, alignItems: 'center', gap: 12 }}>
-            <IconSymbol name="figure.walk" size={48} color="#A8DF8E" />
+            <IconSymbol name="figure.walk" size={48} color="#FFAAB8" />
             <Text
               selectable
               style={{

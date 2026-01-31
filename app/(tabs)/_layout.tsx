@@ -1,12 +1,16 @@
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, usePathname } from "expo-router";
 import React from "react";
 
 import { AppHeaderTitle } from "@/components/app-header-title";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useAuth } from "@/hooks/use-auth";
+
 export default function TabLayout() {
   const { session, isLoading } = useAuth();
+  const pathname = usePathname();
+  const isQuestsOrMood =
+    Boolean(pathname?.includes("quests") || pathname?.includes("daily-mood"));
 
   if (isLoading) {
     return null;
@@ -19,11 +23,11 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#A8DF8E",
+        tabBarActiveTintColor: isQuestsOrMood ? "#FFAAB8" : "#A8DF8E",
         tabBarInactiveTintColor: "#8E9A8D",
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
-          borderTopColor: "#E7EFE1",
+          borderTopColor: "#FFAAB8",
           borderTopWidth: 1,
           height: 72,
           paddingBottom: 14,
@@ -31,7 +35,7 @@ export default function TabLayout() {
         },
         headerStyle: {
           backgroundColor: "#FFFFFF",
-          borderBottomColor: "#E7EFE1",
+          borderBottomColor: "#FFAAB8",
           borderBottomWidth: 1,
         },
         headerTitle: () => <AppHeaderTitle />,

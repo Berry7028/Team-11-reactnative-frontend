@@ -95,6 +95,8 @@ export default function HomeScreen() {
         contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, backgroundColor: "transparent" }}
         contentContainerStyle={{ paddingBottom: 32, paddingTop: 48, gap: 24 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
         }
@@ -216,7 +218,7 @@ export default function HomeScreen() {
           />
           {isMascotLoading ? (
             <View style={{ alignItems: "center" }}>
-              <ActivityIndicator size="small" color="#A8DF8E" />
+              <ActivityIndicator size="small" color="#FFAAB8" />
               <Text
                 style={{
                   marginTop: 8,
@@ -293,7 +295,7 @@ export default function HomeScreen() {
               borderCurve: "continuous",
             }}
           >
-            <ActivityIndicator size="small" color="#A8DF8E" />
+            <ActivityIndicator size="small" color="#FFAAB8" />
             <Text
               style={{
                 marginTop: 8,
@@ -328,12 +330,12 @@ export default function HomeScreen() {
                       height: 56,
                       width: 56,
                       borderRadius: 18,
-                      backgroundColor: "rgba(168, 223, 142, 0.2)",
+                      backgroundColor: "rgba(255, 170, 184, 0.2)",
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    <IconSymbol name="wind" size={28} color="#A8DF8E" />
+                    <IconSymbol name="wind" size={28} color="#FFAAB8" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text
@@ -411,7 +413,7 @@ export default function HomeScreen() {
               borderCurve: "continuous",
             }}
           >
-            <IconSymbol name="checkmark.circle.fill" size={32} color="#A8DF8E" />
+            <IconSymbol name="checkmark.circle.fill" size={32} color="#FFAAB8" />
             <Text
               style={{
                 marginTop: 8,
@@ -448,7 +450,7 @@ export default function HomeScreen() {
                 borderCurve: "continuous",
               }}
             >
-              <IconSymbol name="sparkles" size={32} color="#A8DF8E" />
+              <IconSymbol name="sparkles" size={32} color="#FFAAB8" />
               <Text
                 style={{
                   marginTop: 8,

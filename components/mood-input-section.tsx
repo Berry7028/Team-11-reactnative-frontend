@@ -114,7 +114,14 @@ export function MoodInputSection({
 
       <View style={{ paddingHorizontal: 24, gap: 12 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <IconSymbol name="pencil" size={18} color="#A8DF8E" />
+          <View
+            style={{
+              width: 4,
+              height: 20,
+              borderRadius: 999,
+              backgroundColor: "#FFAAB8",
+            }}
+          />
           <Text
             selectable
             style={{
@@ -126,6 +133,7 @@ export function MoodInputSection({
           >
             自由入力
           </Text>
+          <IconSymbol name="pencil" size={18} color="#FFAAB8" />
         </View>
         <View>
           <TextInput

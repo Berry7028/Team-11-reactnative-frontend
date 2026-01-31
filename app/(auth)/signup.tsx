@@ -1,4 +1,3 @@
-import { Link } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -18,13 +17,15 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
     if (!username || !email || !password || !confirmPassword) {
       Alert.alert(
         "入力エラー",
-        "ユーザーID・メールアドレス・パスワードを入力してください。",
+        "表示名・メールアドレス・パスワードを入力してください。",
       );
       return;
     }
@@ -41,7 +42,7 @@ export default function SignUpScreen() {
       },
     });
     if (error) {
-      Alert.alert("サインアップに失敗しました", error.message);
+      Alert.alert("新規ユーザー登録に失敗しました", error.message);
     } else if (!data.session) {
       Alert.alert(
         "確認メールを送信しました",
@@ -56,6 +57,8 @@ export default function SignUpScreen() {
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: "#F0FFDF" }}
       contentContainerStyle={{ padding: 20, gap: 20 }}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
     >
       <View style={{ alignItems: "center", gap: 10 }}>
         <View
@@ -70,7 +73,7 @@ export default function SignUpScreen() {
             borderCurve: "continuous",
           }}
         >
-          <IconSymbol name="sparkles" size={28} color="#A8DF8E" />
+          <IconSymbol name="sparkles" size={28} color="#FFAAB8" />
         </View>
         <Text
           selectable
@@ -107,10 +110,10 @@ export default function SignUpScreen() {
               fontFamily: Fonts.rounded,
             }}
           >
-            ユーザーID
+            表示名
           </Text>
           <TextInput
-            placeholder="例）new_mate"
+            placeholder="例）たろう"
             placeholderTextColor="rgba(107, 122, 102, 0.5)"
             style={{
               height: 52,
@@ -172,25 +175,46 @@ export default function SignUpScreen() {
           >
             パスワード
           </Text>
-          <TextInput
-            placeholder="******"
-            secureTextEntry
-            placeholderTextColor="rgba(107, 122, 102, 0.5)"
-            style={{
-              height: 52,
-              borderRadius: 18,
-              backgroundColor: "#FFFFFF",
-              paddingHorizontal: 16,
-              fontSize: 14,
-              color: "#141712",
-              boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
-              borderCurve: "continuous",
-              fontFamily: Fonts.rounded,
-            }}
-            autoCapitalize="none"
-            value={password}
-            onChangeText={setPassword}
-          />
+          <View style={{ position: "relative" }}>
+            <TextInput
+              placeholder="******"
+              secureTextEntry={!showPassword}
+              placeholderTextColor="rgba(107, 122, 102, 0.5)"
+              style={{
+                height: 52,
+                borderRadius: 18,
+                backgroundColor: "#FFFFFF",
+                paddingHorizontal: 16,
+                paddingRight: 48,
+                fontSize: 14,
+                color: "#141712",
+                boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
+                borderCurve: "continuous",
+                fontFamily: Fonts.rounded,
+              }}
+              autoCapitalize="none"
+              value={password}
+              onChangeText={setPassword}
+            />
+            <Pressable
+              onPress={() => setShowPassword((prev) => !prev)}
+              style={{
+                position: "absolute",
+                right: 12,
+                top: 0,
+                bottom: 0,
+                justifyContent: "center",
+                padding: 4,
+              }}
+              accessibilityLabel={showPassword ? "パスワードを隠す" : "パスワードを表示"}
+            >
+              <IconSymbol
+                name={showPassword ? "eye.slash.fill" : "eye.fill"}
+                size={22}
+                color="#6B7A66"
+              />
+            </Pressable>
+          </View>
         </View>
         <View style={{ gap: 6 }}>
           <Text
@@ -204,25 +228,46 @@ export default function SignUpScreen() {
           >
             パスワード（確認）
           </Text>
-          <TextInput
-            placeholder="******"
-            secureTextEntry
-            placeholderTextColor="rgba(107, 122, 102, 0.5)"
-            style={{
-              height: 52,
-              borderRadius: 18,
-              backgroundColor: "#FFFFFF",
-              paddingHorizontal: 16,
-              fontSize: 14,
-              color: "#141712",
-              boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
-              borderCurve: "continuous",
-              fontFamily: Fonts.rounded,
-            }}
-            autoCapitalize="none"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
+          <View style={{ position: "relative" }}>
+            <TextInput
+              placeholder="******"
+              secureTextEntry={!showConfirmPassword}
+              placeholderTextColor="rgba(107, 122, 102, 0.5)"
+              style={{
+                height: 52,
+                borderRadius: 18,
+                backgroundColor: "#FFFFFF",
+                paddingHorizontal: 16,
+                paddingRight: 48,
+                fontSize: 14,
+                color: "#141712",
+                boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
+                borderCurve: "continuous",
+                fontFamily: Fonts.rounded,
+              }}
+              autoCapitalize="none"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+            <Pressable
+              onPress={() => setShowConfirmPassword((prev) => !prev)}
+              style={{
+                position: "absolute",
+                right: 12,
+                top: 0,
+                bottom: 0,
+                justifyContent: "center",
+                padding: 4,
+              }}
+              accessibilityLabel={showConfirmPassword ? "パスワードを隠す" : "パスワードを表示"}
+            >
+              <IconSymbol
+                name={showConfirmPassword ? "eye.slash.fill" : "eye.fill"}
+                size={22}
+                color="#6B7A66"
+              />
+            </Pressable>
+          </View>
         </View>
       </View>
 
@@ -254,30 +299,6 @@ export default function SignUpScreen() {
         </Text>
         <IconSymbol name="checkmark.circle.fill" size={18} color="#FFFFFF" />
       </Pressable>
-
-      <View style={{ alignItems: "center", gap: 6 }}>
-        <Text
-          selectable
-          style={{ fontSize: 12, color: "#6B7A66", fontFamily: Fonts.rounded }}
-        >
-          すでにアカウントをお持ちですか？
-        </Text>
-        <Link href="/(auth)/signin" asChild>
-          <Pressable style={{ paddingVertical: 6, paddingHorizontal: 12 }}>
-            <Text
-              selectable
-              style={{
-                fontSize: 13,
-                fontWeight: "700",
-                color: "#3A4D39",
-                fontFamily: Fonts.rounded,
-              }}
-            >
-              サインインへ
-            </Text>
-          </Pressable>
-        </Link>
-      </View>
     </ScrollView>
   );
 }

@@ -162,6 +162,8 @@ export default function SettingsScreen() {
         contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, backgroundColor: "transparent" }}
         contentContainerStyle={{ paddingBottom: 32, paddingTop: 16, gap: 20 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <View style={{ paddingHorizontal: 24, gap: 16 }}>
         <View

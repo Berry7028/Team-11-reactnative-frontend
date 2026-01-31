@@ -16,6 +16,7 @@ import { supabase } from "@/lib/supabase";
 export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
@@ -32,7 +33,7 @@ export default function SignInScreen() {
       password,
     });
     if (error) {
-      Alert.alert("サインインに失敗しました", error.message);
+      Alert.alert("ログインに失敗しました", error.message);
     }
     setLoading(false);
   };
@@ -42,6 +43,8 @@ export default function SignInScreen() {
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: "#F0FFDF" }}
       contentContainerStyle={{ padding: 20, gap: 20 }}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
     >
       <View style={{ alignItems: "center", gap: 10 }}>
         <View
@@ -56,7 +59,7 @@ export default function SignInScreen() {
             borderCurve: "continuous",
           }}
         >
-          <IconSymbol name="heart.fill" size={28} color="#A8DF8E" />
+          <IconSymbol name="heart.fill" size={28} color="#FFAAB8" />
         </View>
         <Text
           selectable
@@ -127,25 +130,46 @@ export default function SignInScreen() {
           >
             パスワード
           </Text>
-          <TextInput
-            placeholder="******"
-            secureTextEntry
-            placeholderTextColor="rgba(107, 122, 102, 0.5)"
-            style={{
-              height: 52,
-              borderRadius: 18,
-              backgroundColor: "#FFFFFF",
-              paddingHorizontal: 16,
-              fontSize: 14,
-              color: "#141712",
-              boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
-              borderCurve: "continuous",
-              fontFamily: Fonts.rounded,
-            }}
-            autoCapitalize="none"
-            value={password}
-            onChangeText={setPassword}
-          />
+          <View style={{ position: "relative" }}>
+            <TextInput
+              placeholder="******"
+              secureTextEntry={!showPassword}
+              placeholderTextColor="rgba(107, 122, 102, 0.5)"
+              style={{
+                height: 52,
+                borderRadius: 18,
+                backgroundColor: "#FFFFFF",
+                paddingHorizontal: 16,
+                paddingRight: 48,
+                fontSize: 14,
+                color: "#141712",
+                boxShadow: "0 6px 12px rgba(20, 23, 18, 0.08)",
+                borderCurve: "continuous",
+                fontFamily: Fonts.rounded,
+              }}
+              autoCapitalize="none"
+              value={password}
+              onChangeText={setPassword}
+            />
+            <Pressable
+              onPress={() => setShowPassword((prev) => !prev)}
+              style={{
+                position: "absolute",
+                right: 12,
+                top: 0,
+                bottom: 0,
+                justifyContent: "center",
+                padding: 4,
+              }}
+              accessibilityLabel={showPassword ? "パスワードを隠す" : "パスワードを表示"}
+            >
+              <IconSymbol
+                name={showPassword ? "eye.slash.fill" : "eye.fill"}
+                size={22}
+                color="#6B7A66"
+              />
+            </Pressable>
+          </View>
         </View>
       </View>
 
@@ -196,7 +220,7 @@ export default function SignInScreen() {
                 fontFamily: Fonts.rounded,
               }}
             >
-              サインアップへ
+              新規ユーザー登録へ
             </Text>
           </Pressable>
         </Link>

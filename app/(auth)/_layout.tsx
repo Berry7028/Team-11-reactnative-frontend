@@ -22,8 +22,8 @@ export default function AuthLayout() {
         headerTitleStyle: { color: "#3A4D39" },
       }}
     >
-      <Stack.Screen name="signin" options={{ title: "サインイン" }} />
-      <Stack.Screen name="signup" options={{ title: "サインアップ" }} />
+      <Stack.Screen name="signin" options={{ title: "ログイン" }} />
+      <Stack.Screen name="signup" options={{ title: "新規ユーザー登録" }} />
     </Stack>
   );
 }

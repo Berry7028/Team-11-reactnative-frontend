@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
+import { GrassBackground } from '@/components/grass-background';
 import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
@@ -84,40 +85,30 @@ export default function QuestsScreen() {
 
   const completedCount = quests.filter((q) => q.completed).length;
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={{ backgroundColor: '#FFF9FA' }}
-      contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
-      refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
-      }>
-      <View style={{ paddingHorizontal: 16 }}>
-        <Text
-          selectable
-          style={{
-            color: '#FFAAB8',
-            fontSize: 12,
-            fontWeight: '700',
-            letterSpacing: 1,
-            textAlign: 'center',
-            fontFamily: Fonts.rounded,
-          }}>
-          今のあなたにぴったりの目標
-        </Text>
-        <Text
-          selectable
-          style={{
-            color: '#5C5254',
-            fontSize: 12,
-            textAlign: 'center',
-            marginTop: 6,
-            fontFamily: Fonts.rounded,
-          }}>
-          {quests.length > 0
-            ? `${completedCount}/${quests.length} 完了`
-            : '無理のない範囲で、少しずつ進めていきましょう'}
-        </Text>
-      </View>
+    <GrassBackground>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ flex: 1, backgroundColor: 'transparent' }}
+        contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+        }>
+      {quests.length > 0 && (
+        <View style={{ paddingHorizontal: 16 }}>
+          <Text
+            selectable
+            style={{
+              color: '#5C5254',
+              fontSize: 12,
+              textAlign: 'center',
+              fontFamily: Fonts.rounded,
+            }}>
+            {completedCount}/{quests.length} 完了
+          </Text>
+        </View>
+      )}
 
       <View style={{ paddingHorizontal: 16 }}>
         <View
@@ -161,7 +152,7 @@ export default function QuestsScreen() {
                 lineHeight: 20,
                 fontFamily: Fonts.rounded,
               }}>
-              「ここにいるだけで、もう十分がんばっていますよ。ゆっくり深呼吸しましょう。」
+              ここにいるだけで、もう十分がんばっていますよ。無理のない範囲で少しずつ進めていきましょう
             </Text>
           </View>
         </View>
@@ -181,7 +172,7 @@ export default function QuestsScreen() {
         </View>
       ) : quests.length === 0 ? (
         <View style={{ paddingHorizontal: 16, paddingVertical: 40, alignItems: 'center' }}>
-          <IconSymbol name="sparkles" size={48} color="#FFD8DF" />
+          <IconSymbol name="sparkles" size={48} color="#FFAAB8" />
           <Text
             style={{
               marginTop: 16,
@@ -297,7 +288,7 @@ export default function QuestsScreen() {
                         opacity: isToggling ? 0.7 : 1,
                       }}>
                       {isToggling ? (
-                        <ActivityIndicator size="small" color="#FFFFFF" />
+                        <ActivityIndicator size="small" color="#FFAAB8" />
                       ) : (
                         <>
                           <IconSymbol
@@ -325,6 +316,7 @@ export default function QuestsScreen() {
           })}
         </View>
       )}
-    </ScrollView>
+      </ScrollView>
+    </GrassBackground>
   );
 }
