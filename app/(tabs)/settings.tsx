@@ -161,7 +161,7 @@ export default function SettingsScreen() {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, backgroundColor: "transparent" }}
-        contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, gap: 20 }}
+        contentContainerStyle={{ paddingBottom: 32, paddingTop: 16, gap: 20 }}
       >
         <View style={{ paddingHorizontal: 24, gap: 16 }}>
         <View

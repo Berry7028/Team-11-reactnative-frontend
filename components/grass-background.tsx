@@ -1,9 +1,7 @@
 import React from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 /** ホームの草背景用：葉っぱ（leaf）の位置・サイズ・色 */
 const FOOTPRINTS = [
@@ -28,6 +26,8 @@ const GRASS_BG = "#F0FFDF";
  * クエスト以外の画面で使用する。
  */
 export function GrassBackground({ children }: { children: React.ReactNode }) {
+  const { width: winWidth, height: winHeight } = useWindowDimensions();
+
   return (
     <View style={[styles.container, { backgroundColor: GRASS_BG }]}>
       <View style={styles.decoration} pointerEvents="none">
@@ -39,9 +39,9 @@ export function GrassBackground({ children }: { children: React.ReactNode }) {
             color={fp.color}
             style={{
               position: "absolute",
-              top: fp.top * SCREEN_HEIGHT,
-              ...("left" in fp && fp.left != null && { left: fp.left * SCREEN_WIDTH }),
-              ...("right" in fp && fp.right != null && { right: fp.right * SCREEN_WIDTH }),
+              top: fp.top * winHeight,
+              ...("left" in fp && fp.left != null && { left: fp.left * winWidth }),
+              ...("right" in fp && fp.right != null && { right: fp.right * winWidth }),
             }}
           />
         ))}
@@ -53,9 +53,9 @@ export function GrassBackground({ children }: { children: React.ReactNode }) {
             color={d.color}
             style={{
               position: "absolute",
-              top: d.top * SCREEN_HEIGHT,
-              ...("left" in d && d.left != null && { left: d.left * SCREEN_WIDTH }),
-              ...("right" in d && d.right != null && { right: d.right * SCREEN_WIDTH }),
+              top: d.top * winHeight,
+              ...("left" in d && d.left != null && { left: d.left * winWidth }),
+              ...("right" in d && d.right != null && { right: d.right * winWidth }),
             }}
           />
         ))}
