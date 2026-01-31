@@ -1,13 +1,16 @@
 import { Image } from "expo-image";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  AppState,
+  AppStateStatus,
   Pressable,
   ScrollView,
   Text,
   View,
 } from "react-native";
+import * as Notifications from "expo-notifications";
 
 import { GrassBackground } from "@/components/grass-background";
 import { MoodInputSection, type MoodInputData } from "@/components/mood-input-section";
@@ -128,6 +131,8 @@ export default function DailyMoodScreen() {
     useState<number | null>(null);
 
   const userUuid = session?.user?.id;
+  const appState = useRef<AppStateStatus>(AppState.currentState);
+  const isProcessingAI = useRef(false);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -137,6 +142,17 @@ export default function DailyMoodScreen() {
   useEffect(() => {
     setLastMorningSubmittedAt(getStoredTimestamp(STORAGE_KEYS.morning));
     setLastNightSubmittedAt(getStoredTimestamp(STORAGE_KEYS.night));
+  }, []);
+
+  // アプリのフォアグラウンド/バックグラウンド状態を監視
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   const windowStart = useMemo(
@@ -166,6 +182,40 @@ export default function DailyMoodScreen() {
     setMoodData(data);
   };
 
+  const processAIInBackground = async (userUuid: string) => {
+    isProcessingAI.current = true;
+    try {
+      await generateRecommendations(userUuid);
+      
+      // アプリがバックグラウンドの場合のみ通知を表示
+      if (appState.current !== 'active') {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "クエスト生成完了！",
+            body: "新しいクエストが生成されました。確認してみてね！",
+            data: { type: "quest_generated" },
+          },
+          trigger: null, // 即時表示
+        });
+      }
+    } catch (error) {
+      console.error("AI処理エラー:", error);
+      // エラー時もバックグラウンドなら通知
+      if (appState.current !== 'active') {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "クエスト生成",
+            body: "クエストの生成に時間がかかっています。しばらくしてから確認してください。",
+            data: { type: "quest_delayed" },
+          },
+          trigger: null,
+        });
+      }
+    } finally {
+      isProcessingAI.current = false;
+    }
+  };
+
   const handleSubmitMorning = async () => {
     if (hasSubmittedThisWindow) {
       Alert.alert("回答済み", "次のアンケートまでお待ちください。");
@@ -188,14 +238,15 @@ export default function DailyMoodScreen() {
         free_text: moodData.freeText,
       });
 
-      // AIレコメンデーション生成
-      await generateRecommendations(userUuid);
-
       const submittedAt = Date.now();
       setStoredTimestamp(STORAGE_KEYS.morning, submittedAt);
       setLastMorningSubmittedAt(submittedAt);
 
-      Alert.alert("完了", "記録を保存しました！クエストが生成されました。");
+      // 即時フィードバックを表示
+      Alert.alert("完了", "記録を保存しました！");
+
+      // AI処理はバックグラウンドで非同期実行
+      processAIInBackground(userUuid);
     } catch (error) {
       const message =
         error instanceof ApiRequestError
