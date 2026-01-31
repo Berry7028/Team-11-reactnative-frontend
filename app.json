@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "Choco Life",
+    "slug": "choco-life",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "app",
+    "scheme": "choco-life",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -13,8 +13,12 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "あなたの現在地を記録し、近くにいる仲間とすれ違いを検出します。",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "バックグラウンドでも位置情報を記録し、すれ違い機能を有効にします。",
-        "UIBackgroundModes": ["location"]
-      }
+        "UIBackgroundModes": [
+          "location",
+          "location"
+        ]
+      },
+      "bundleIdentifier": "com.berry7028.choco-life"
     },
     "android": {
       "adaptiveIcon": {
@@ -30,8 +34,14 @@
         "ACCESS_COARSE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION",
         "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE_LOCATION"
-      ]
+        "FOREGROUND_SERVICE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION"
+      ],
+      "package": "com.berry7028.choco-life"
     },
     "web": {
       "output": "static",
@@ -39,6 +49,16 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "バックグラウンドでも位置情報を記録し、すれ違い機能を有効にします。",
+          "locationAlwaysPermission": "バックグラウンドでも位置情報を記録し、すれ違い機能を有効にします。",
+          "locationWhenInUsePermission": "あなたの現在地を記録し、近くにいる仲間とすれ違いを検出します。",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
       [
         "expo-splash-screen",
         {
