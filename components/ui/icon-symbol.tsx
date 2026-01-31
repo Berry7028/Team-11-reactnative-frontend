@@ -43,6 +43,8 @@ const MAPPING = {
   'leaf': 'local-florist',
   'circle.fill': 'circle',
   'figure.walk': 'directions-walk',
+  'eye.fill': 'visibility',
+  'eye.slash.fill': 'visibility-off',
 } as IconMapping;
 
 /**
