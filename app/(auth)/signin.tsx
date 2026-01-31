@@ -32,7 +32,7 @@ export default function SignInScreen() {
       password,
     });
     if (error) {
-      Alert.alert("サインインに失敗しました", error.message);
+      Alert.alert("ログインに失敗しました", error.message);
     }
     setLoading(false);
   };
@@ -198,7 +198,7 @@ export default function SignInScreen() {
                 fontFamily: Fonts.rounded,
               }}
             >
-              サインアップへ
+              新規ユーザー登録へ
             </Text>
           </Pressable>
         </Link>

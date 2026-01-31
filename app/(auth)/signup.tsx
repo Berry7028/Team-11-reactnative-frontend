@@ -41,7 +41,7 @@ export default function SignUpScreen() {
       },
     });
     if (error) {
-      Alert.alert("サインアップに失敗しました", error.message);
+      Alert.alert("新規ユーザー登録に失敗しました", error.message);
     } else if (!data.session) {
       Alert.alert(
         "確認メールを送信しました",
@@ -275,7 +275,7 @@ export default function SignUpScreen() {
                 fontFamily: Fonts.rounded,
               }}
             >
-              サインインへ
+              ログインへ
             </Text>
           </Pressable>
         </Link>
