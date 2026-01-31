@@ -328,12 +328,12 @@ export default function HomeScreen() {
                       height: 56,
                       width: 56,
                       borderRadius: 18,
-                      backgroundColor: "rgba(168, 223, 142, 0.2)",
+                      backgroundColor: "rgba(255, 170, 184, 0.2)",
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    <IconSymbol name="wind" size={28} color="#A8DF8E" />
+                    <IconSymbol name="wind" size={28} color="#FFAAB8" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text
@@ -411,7 +411,7 @@ export default function HomeScreen() {
               borderCurve: "continuous",
             }}
           >
-            <IconSymbol name="checkmark.circle.fill" size={32} color="#A8DF8E" />
+            <IconSymbol name="checkmark.circle.fill" size={32} color="#FFAAB8" />
             <Text
               style={{
                 marginTop: 8,
@@ -448,7 +448,7 @@ export default function HomeScreen() {
                 borderCurve: "continuous",
               }}
             >
-              <IconSymbol name="sparkles" size={32} color="#A8DF8E" />
+              <IconSymbol name="sparkles" size={32} color="#FFAAB8" />
               <Text
                 style={{
                   marginTop: 8,

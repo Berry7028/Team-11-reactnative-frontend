@@ -56,7 +56,7 @@ export default function SignInScreen() {
             borderCurve: "continuous",
           }}
         >
-          <IconSymbol name="heart.fill" size={28} color="#A8DF8E" />
+          <IconSymbol name="heart.fill" size={28} color="#FFAAB8" />
         </View>
         <Text
           selectable

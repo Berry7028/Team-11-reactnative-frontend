@@ -70,7 +70,7 @@ export default function SignUpScreen() {
             borderCurve: "continuous",
           }}
         >
-          <IconSymbol name="sparkles" size={28} color="#A8DF8E" />
+          <IconSymbol name="sparkles" size={28} color="#FFAAB8" />
         </View>
         <Text
           selectable

@@ -122,7 +122,7 @@ export default function LogScreen() {
                 borderRadius: 999,
                 backgroundColor: 'rgba(168, 223, 142, 0.15)',
               }}>
-              <IconSymbol name="lock.fill" size={48} color="#A8DF8E" />
+              <IconSymbol name="lock.fill" size={48} color="#FFAAB8" />
             </View>
             <Text
               selectable
@@ -421,7 +421,7 @@ export default function LogScreen() {
         {/* すれ違いがない場合 */}
         {!isLoadingEncounters && encounters.length === 0 && (
           <View style={{ paddingHorizontal: 24, paddingTop: 20, alignItems: 'center', gap: 12 }}>
-            <IconSymbol name="figure.walk" size={48} color="#A8DF8E" />
+            <IconSymbol name="figure.walk" size={48} color="#FFAAB8" />
             <Text
               selectable
               style={{
