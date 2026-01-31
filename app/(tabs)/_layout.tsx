@@ -23,7 +23,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#8E9A8D",
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
-          borderTopColor: "#E7EFE1",
+          borderTopColor: "#FFAAB8",
           borderTopWidth: 1,
           height: 72,
           paddingBottom: 14,
@@ -31,7 +31,7 @@ export default function TabLayout() {
         },
         headerStyle: {
           backgroundColor: "#FFFFFF",
-          borderBottomColor: "#E7EFE1",
+          borderBottomColor: "#FFAAB8",
           borderBottomWidth: 1,
         },
         headerTitle: () => <AppHeaderTitle />,
