@@ -95,6 +95,8 @@ export default function HomeScreen() {
         contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, backgroundColor: "transparent" }}
         contentContainerStyle={{ paddingBottom: 32, paddingTop: 48, gap: 24 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
         }

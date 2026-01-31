@@ -56,6 +56,8 @@ export default function SignUpScreen() {
       contentInsetAdjustmentBehavior="automatic"
       style={{ backgroundColor: "#F0FFDF" }}
       contentContainerStyle={{ padding: 20, gap: 20 }}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
     >
       <View style={{ alignItems: "center", gap: 10 }}>
         <View

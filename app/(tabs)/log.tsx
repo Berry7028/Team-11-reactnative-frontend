@@ -114,7 +114,9 @@ export default function LogScreen() {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={{ flex: 1, backgroundColor: 'transparent' }}
-          contentContainerStyle={{ paddingBottom: 32, paddingTop: 20, gap: 20 }}>
+          contentContainerStyle={{ paddingBottom: 32, paddingTop: 20, gap: 20 }}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}>
           <View style={{ paddingHorizontal: 24, paddingTop: 40, alignItems: 'center', gap: 16 }}>
             <View
               style={{
@@ -164,7 +166,9 @@ export default function LogScreen() {
           paddingRight: insets.right,
           gap: 20,
           flexGrow: 0,
-        }}>
+        }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}>
         {/* 今日のサマリー */}
         <View
           style={{

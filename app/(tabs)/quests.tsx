@@ -90,6 +90,8 @@ export default function QuestsScreen() {
         contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, backgroundColor: 'transparent' }}
         contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
         }>

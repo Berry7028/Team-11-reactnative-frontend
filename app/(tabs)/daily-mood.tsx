@@ -500,6 +500,8 @@ export default function DailyMoodScreen() {
         contentInsetAdjustmentBehavior="automatic"
         style={{ flex: 1, backgroundColor: "transparent" }}
         contentContainerStyle={{ paddingBottom: 28, paddingTop: 8, gap: 20 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
       {!hasSubmittedThisWindow && (
         <View style={{ paddingHorizontal: 24, alignItems: "center", gap: 18 }}>
