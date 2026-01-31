@@ -1,4 +1,3 @@
-import { Link } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -256,30 +255,6 @@ export default function SignUpScreen() {
         </Text>
         <IconSymbol name="checkmark.circle.fill" size={18} color="#FFFFFF" />
       </Pressable>
-
-      <View style={{ alignItems: "center", gap: 6 }}>
-        <Text
-          selectable
-          style={{ fontSize: 12, color: "#6B7A66", fontFamily: Fonts.rounded }}
-        >
-          すでにアカウントをお持ちですか？
-        </Text>
-        <Link href="/(auth)/signin" asChild>
-          <Pressable style={{ paddingVertical: 6, paddingHorizontal: 12 }}>
-            <Text
-              selectable
-              style={{
-                fontSize: 13,
-                fontWeight: "700",
-                color: "#3A4D39",
-                fontFamily: Fonts.rounded,
-              }}
-            >
-              ログインへ
-            </Text>
-          </Pressable>
-        </Link>
-      </View>
     </ScrollView>
   );
 }
