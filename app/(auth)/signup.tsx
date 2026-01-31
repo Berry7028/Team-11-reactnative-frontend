@@ -24,7 +24,7 @@ export default function SignUpScreen() {
     if (!username || !email || !password || !confirmPassword) {
       Alert.alert(
         "入力エラー",
-        "ユーザーID・メールアドレス・パスワードを入力してください。",
+        "表示名・メールアドレス・パスワードを入力してください。",
       );
       return;
     }
@@ -109,10 +109,10 @@ export default function SignUpScreen() {
               fontFamily: Fonts.rounded,
             }}
           >
-            ユーザーID
+            表示名
           </Text>
           <TextInput
-            placeholder="例）new_mate"
+            placeholder="例）たろう"
             placeholderTextColor="rgba(107, 122, 102, 0.5)"
             style={{
               height: 52,
