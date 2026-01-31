@@ -93,33 +93,20 @@ export default function QuestsScreen() {
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
         }>
-      <View style={{ paddingHorizontal: 16 }}>
-        <Text
-          selectable
-          style={{
-            color: '#FFAAB8',
-            fontSize: 12,
-            fontWeight: '700',
-            letterSpacing: 1,
-            textAlign: 'center',
-            fontFamily: Fonts.rounded,
-          }}>
-          今のあなたにぴったりの目標
-        </Text>
-        <Text
-          selectable
-          style={{
-            color: '#5C5254',
-            fontSize: 12,
-            textAlign: 'center',
-            marginTop: 6,
-            fontFamily: Fonts.rounded,
-          }}>
-          {quests.length > 0
-            ? `${completedCount}/${quests.length} 完了`
-            : '無理のない範囲で、少しずつ進めていきましょう'}
-        </Text>
-      </View>
+      {quests.length > 0 && (
+        <View style={{ paddingHorizontal: 16 }}>
+          <Text
+            selectable
+            style={{
+              color: '#5C5254',
+              fontSize: 12,
+              textAlign: 'center',
+              fontFamily: Fonts.rounded,
+            }}>
+            {completedCount}/{quests.length} 完了
+          </Text>
+        </View>
+      )}
 
       <View style={{ paddingHorizontal: 16 }}>
         <View
@@ -163,7 +150,7 @@ export default function QuestsScreen() {
                 lineHeight: 20,
                 fontFamily: Fonts.rounded,
               }}>
-              「ここにいるだけで、もう十分がんばっていますよ。ゆっくり深呼吸しましょう。」
+              ここにいるだけで、もう十分がんばっていますよ。無理のない範囲で少しずつ進めていきましょう
             </Text>
           </View>
         </View>
