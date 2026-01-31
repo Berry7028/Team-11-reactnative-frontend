@@ -247,38 +247,6 @@ export default function HomeScreen() {
             </Text>
           )}
         </View>
-        <View
-          style={{
-            marginTop: 18,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8,
-            backgroundColor: "rgba(255,255,255,0.6)",
-            paddingHorizontal: 18,
-            paddingVertical: 8,
-            borderRadius: 999,
-            borderWidth: 1,
-            borderColor: "rgba(168, 223, 142, 0.2)",
-            boxShadow: "0 2px 8px rgba(168, 223, 142, 0.1)",
-          }}
-        >
-          <IconSymbol
-            name="person.3.fill"
-            size={16}
-            color="rgba(58, 77, 57, 0.6)"
-          />
-          <Text
-            selectable
-            style={{
-              fontSize: 12,
-              fontWeight: "700",
-              color: "rgba(58, 77, 57, 0.6)",
-              fontFamily: Fonts.rounded,
-            }}
-          >
-            14人がすれ違いました
-          </Text>
-        </View>
       </View>
 
       <View style={{ paddingHorizontal: 16, gap: 16 }}>
