@@ -294,7 +294,7 @@ export default function LogScreen() {
         {/* ローディング中 */}
         {isLoadingEncounters && (
           <View style={{ paddingVertical: 40, alignItems: 'center' }}>
-            <ActivityIndicator size="large" color="#A8DF8E" />
+            <ActivityIndicator size="large" color="#FFAAB8" />
           </View>
         )}
 
@@ -396,7 +396,7 @@ export default function LogScreen() {
                         justifyContent: 'center',
                       }}>
                       {sending ? (
-                        <ActivityIndicator size="small" color="#D87D8E" />
+                        <ActivityIndicator size="small" color="#FFAAB8" />
                       ) : (
                         <IconSymbol
                           name="heart.fill"

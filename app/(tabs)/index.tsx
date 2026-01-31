@@ -218,7 +218,7 @@ export default function HomeScreen() {
           />
           {isMascotLoading ? (
             <View style={{ alignItems: "center" }}>
-              <ActivityIndicator size="small" color="#A8DF8E" />
+              <ActivityIndicator size="small" color="#FFAAB8" />
               <Text
                 style={{
                   marginTop: 8,
@@ -295,7 +295,7 @@ export default function HomeScreen() {
               borderCurve: "continuous",
             }}
           >
-            <ActivityIndicator size="small" color="#A8DF8E" />
+            <ActivityIndicator size="small" color="#FFAAB8" />
             <Text
               style={{
                 marginTop: 8,

@@ -470,7 +470,7 @@ export default function DailyMoodScreen() {
                   }}
                 >
                   {isSubmitting ? (
-                    <ActivityIndicator color="#FFFFFF" />
+                    <ActivityIndicator color="#FFAAB8" />
                   ) : (
                     <Text
                       selectable
@@ -734,7 +734,7 @@ export default function DailyMoodScreen() {
               }}
             >
               {isSubmitting ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color="#FFAAB8" />
               ) : (
                 <>
                   <Text

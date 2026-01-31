@@ -288,7 +288,7 @@ export default function QuestsScreen() {
                         opacity: isToggling ? 0.7 : 1,
                       }}>
                       {isToggling ? (
-                        <ActivityIndicator size="small" color="#FFFFFF" />
+                        <ActivityIndicator size="small" color="#FFAAB8" />
                       ) : (
                         <>
                           <IconSymbol
