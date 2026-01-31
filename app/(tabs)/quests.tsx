@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
+import { FireworksEffect } from '@/components/fireworks-effect';
 import { GrassBackground } from '@/components/grass-background';
 import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
@@ -30,6 +31,7 @@ export default function QuestsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [togglingQuestId, setTogglingQuestId] = useState<number | null>(null);
+  const [fireworkQuestId, setFireworkQuestId] = useState<number | null>(null);
 
   const userUuid = session?.user?.id;
 
@@ -66,12 +68,20 @@ export default function QuestsScreen() {
   const handleToggleComplete = async (questId: number) => {
     if (!userUuid) return;
 
+    const quest = quests.find((q) => q.id === questId);
+    const isCompleting = quest && !quest.completed;
+
     setTogglingQuestId(questId);
     try {
       const updatedQuest = await toggleQuestComplete(userUuid, questId);
       setQuests((prev) =>
         prev.map((q) => (q.id === questId ? updatedQuest : q))
       );
+
+      // クエストを達成した場合のみ花火エフェクトを表示
+      if (isCompleting) {
+        setFireworkQuestId(questId);
+      }
     } catch (error) {
       const message =
         error instanceof ApiRequestError
@@ -122,7 +132,8 @@ export default function QuestsScreen() {
             borderColor: '#FFD8DF',
             boxShadow: '0 6px 16px rgba(255, 170, 184, 0.15)',
             borderCurve: 'continuous',
-          }}>
+          }}
+        >
           <View
             style={{
               height: 64,
@@ -133,7 +144,8 @@ export default function QuestsScreen() {
               justifyContent: 'center',
               borderWidth: 2,
               borderColor: '#FFD8DF',
-            }}>
+            }}
+          >
             <Image
               source={{
                 uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBgpG_KJPstpM7GGXx-kb1p-fjF2HNBqa0paNYlGjIxfpJtYJheg6M8T9AuPonPlW-Rr63auI00J0Q6WA4EMJ_-pbW6pr4QzG2i6h_Z6Kyznz3Fm4y_NfTClnxtf8qMd6IV0GOkIDh4sk6vJAQeYs2ijcaGVwqLODuO_Ac_1s6l39SffMEGNJK6juZ7eGL4tjO63mMfPy7fy8pBONymn5n7LXyts_DROQv4TrSkzQ-wRXZaYt8fZIdz4dfSSh1mogbP2w_CEWrXLmJ3',
@@ -151,7 +163,8 @@ export default function QuestsScreen() {
                 color: '#332D2E',
                 lineHeight: 20,
                 fontFamily: Fonts.rounded,
-              }}>
+              }}
+            >
               ここにいるだけで、もう十分がんばっていますよ。無理のない範囲で少しずつ進めていきましょう
             </Text>
           </View>
@@ -166,7 +179,8 @@ export default function QuestsScreen() {
               marginTop: 12,
               color: '#5C5254',
               fontFamily: Fonts.rounded,
-            }}>
+            }}
+          >
             クエストを読み込み中...
           </Text>
         </View>
@@ -181,7 +195,8 @@ export default function QuestsScreen() {
               color: '#5C5254',
               textAlign: 'center',
               fontFamily: Fonts.rounded,
-            }}>
+            }}
+          >
             今日のクエストはまだありません
           </Text>
           <Text
@@ -191,7 +206,8 @@ export default function QuestsScreen() {
               color: '#94A3B8',
               textAlign: 'center',
               fontFamily: Fonts.rounded,
-            }}>
+            }}
+          >
             朝の気分を記録するとクエストが生成されます
           </Text>
         </View>
@@ -212,7 +228,8 @@ export default function QuestsScreen() {
                   boxShadow: '0 8px 18px rgba(255, 170, 184, 0.12)',
                   borderCurve: 'continuous',
                   opacity: quest.completed ? 0.7 : 1,
-                }}>
+                }}
+              >
                 <Image
                   source={{ uri: DEFAULT_QUEST_IMAGES[index % DEFAULT_QUEST_IMAGES.length] }}
                   contentFit="cover"
@@ -229,7 +246,8 @@ export default function QuestsScreen() {
                           letterSpacing: 2,
                           color: isHighlighted ? '#332D2E' : 'rgba(51, 45, 46, 0.6)',
                           fontFamily: Fonts.rounded,
-                        }}>
+                        }}
+                      >
                         {quest.completed ? '完了済み' : 'QUEST'}
                       </Text>
                       <Text
@@ -242,7 +260,8 @@ export default function QuestsScreen() {
                           lineHeight: 24,
                           fontFamily: Fonts.rounded,
                           textDecorationLine: quest.completed ? 'line-through' : 'none',
-                        }}>
+                        }}
+                      >
                         {quest.title}
                       </Text>
                       {quest.description && (
@@ -253,7 +272,8 @@ export default function QuestsScreen() {
                             color: '#5C5254',
                             marginTop: 4,
                             fontFamily: Fonts.rounded,
-                          }}>
+                          }}
+                        >
                           {quest.description}
                         </Text>
                       )}
@@ -270,45 +290,54 @@ export default function QuestsScreen() {
                       alignItems: 'center',
                       justifyContent: 'flex-end',
                       marginTop: 12,
-                    }}>
-                    <Pressable
-                      onPress={() => handleToggleComplete(quest.id)}
-                      disabled={isToggling}
-                      style={{
-                        height: 44,
-                        paddingHorizontal: 18,
-                        borderRadius: 999,
-                        backgroundColor: quest.completed ? '#94A3B8' : '#FFAAB8',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 6,
-                        boxShadow: quest.completed
-                          ? '0 6px 14px rgba(148, 163, 184, 0.4)'
-                          : '0 6px 14px rgba(255, 170, 184, 0.4)',
-                        opacity: isToggling ? 0.7 : 1,
-                      }}>
-                      {isToggling ? (
-                        <ActivityIndicator size="small" color="#FFAAB8" />
-                      ) : (
-                        <>
-                          <IconSymbol
-                            name={quest.completed ? 'arrow.uturn.backward' : 'sparkles'}
-                            size={18}
-                            color="#FFFFFF"
-                          />
-                          <Text
-                            selectable
-                            style={{
-                              color: '#FFFFFF',
-                              fontSize: 12,
-                              fontWeight: '700',
-                              fontFamily: Fonts.rounded,
-                            }}>
-                            {quest.completed ? '戻す' : '達成！'}
-                          </Text>
-                        </>
+                      position: 'relative',
+                    }}
+                  >
+                    <View style={{ position: 'relative' }}>
+                      {fireworkQuestId === quest.id && (
+                        <FireworksEffect onComplete={() => setFireworkQuestId(null)} />
                       )}
-                    </Pressable>
+                      <Pressable
+                        onPress={() => handleToggleComplete(quest.id)}
+                        disabled={isToggling}
+                        style={{
+                          height: 44,
+                          paddingHorizontal: 18,
+                          borderRadius: 999,
+                          backgroundColor: quest.completed ? '#94A3B8' : '#FFAAB8',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 6,
+                          boxShadow: quest.completed
+                            ? '0 6px 14px rgba(148, 163, 184, 0.4)'
+                            : '0 6px 14px rgba(255, 170, 184, 0.4)',
+                          opacity: isToggling ? 0.7 : 1,
+                        }}
+                      >
+                        {isToggling ? (
+                          <ActivityIndicator size="small" color="#FFAAB8" />
+                        ) : (
+                          <>
+                            <IconSymbol
+                              name={quest.completed ? 'arrow.uturn.backward' : 'sparkles'}
+                              size={18}
+                              color="#FFFFFF"
+                            />
+                            <Text
+                              selectable
+                              style={{
+                                color: '#FFFFFF',
+                                fontSize: 12,
+                                fontWeight: '700',
+                                fontFamily: Fonts.rounded,
+                              }}
+                            >
+                              {quest.completed ? '戻す' : '達成！'}
+                            </Text>
+                          </>
+                        )}
+                      </Pressable>
+                    </View>
                   </View>
                 </View>
               </View>
