@@ -114,6 +114,14 @@ export function MoodInputSection({
 
       <View style={{ paddingHorizontal: 24, gap: 12 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <View
+            style={{
+              width: 4,
+              height: 20,
+              borderRadius: 999,
+              backgroundColor: "#FFAAB8",
+            }}
+          />
           <Text
             selectable
             style={{
