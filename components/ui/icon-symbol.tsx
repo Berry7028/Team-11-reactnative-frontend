@@ -45,6 +45,10 @@ const MAPPING = {
   'figure.walk': 'directions-walk',
   'eye.fill': 'visibility',
   'eye.slash.fill': 'visibility-off',
+  'minus.circle.fill': 'remove-circle',
+  'moon.zzz.fill': 'bedtime',
+  'exclamationmark.triangle.fill': 'warning',
+  'bed.double.fill': 'hotel',
 } as IconMapping;
 
 /**
