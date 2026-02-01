@@ -2,12 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, Switch, Text, TextInput, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 
 import { GrassBackground } from "@/components/grass-background";
-import { AvatarImage } from "@/components/ui/avatar-image";
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Fonts } from "@/constants/theme";
+import { AccountCard } from "@/components/settings/account-card";
+import { DebugNotificationsCard } from "@/components/settings/debug-notifications-card";
+import { DebugSettingsCard } from "@/components/settings/debug-settings-card";
+import { LogoutCard } from "@/components/settings/logout-card";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, updateMyAvatar } from "@/lib/api";
 
@@ -166,370 +167,26 @@ export default function SettingsScreen() {
         showsHorizontalScrollIndicator={false}
       >
         <View style={{ paddingHorizontal: 24, gap: 16 }}>
-        <View
-          style={{
-            backgroundColor: "#FFFFFF",
-            borderRadius: 20,
-            padding: 20,
-            borderWidth: 1,
-            borderColor: "#EEF1ED",
-            shadowColor: "#141712",
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 6,
-            borderCurve: "continuous",
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
-            <AvatarImage avatarUrl={profileAvatarUrl} size={48} />
-            <View style={{ flex: 1, minWidth: 0, justifyContent: "center", gap: 2 }}>
-              <Text
-                selectable
-                style={{
-                  fontSize: 11,
-                  fontWeight: "600",
-                  color: "#718268",
-                  fontFamily: Fonts.rounded,
-                  letterSpacing: 0.5,
-                }}
-              >
-                アカウント
-              </Text>
-              {session?.user && (
-                <>
-                  {session.user.user_metadata?.display_name ? (
-                    <Text
-                      selectable
-                      numberOfLines={1}
-                      style={{
-                        fontSize: 15,
-                        fontWeight: "700",
-                        color: "#141712",
-                        fontFamily: Fonts.rounded,
-                      }}
-                    >
-                      {session.user.user_metadata.display_name}
-                    </Text>
-                  ) : null}
-                  <Text
-                    selectable
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={{
-                      fontSize: 12,
-                      color: "#718268",
-                      fontFamily: Fonts.rounded,
-                    }}
-                  >
-                    {session.user.email ?? ""}
-                  </Text>
-                </>
-              )}
-            </View>
-          </View>
-
-          {/* アバターURL入力 */}
-          <View style={{ marginTop: 16, gap: 8 }}>
-            <Text
-              selectable
-              style={{
-                fontSize: 12,
-                fontWeight: "700",
-                color: "#718268",
-                fontFamily: Fonts.rounded,
-              }}
-            >
-              アバターURL
-            </Text>
-            <TextInput
-              placeholder="https://..."
-              placeholderTextColor="rgba(113, 130, 104, 0.5)"
-              value={avatarUrlInput}
-              onChangeText={setAvatarUrlInput}
-              style={{
-                height: 44,
-                borderRadius: 12,
-                backgroundColor: "rgba(168, 223, 142, 0.1)",
-                paddingHorizontal: 14,
-                fontSize: 13,
-                color: "#141712",
-                fontFamily: Fonts.rounded,
-              }}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <Pressable
-              onPress={handleSaveAvatarUrl}
-              disabled={isSavingAvatar}
-              style={{
-                backgroundColor: "rgba(168, 223, 142, 0.3)",
-                borderRadius: 12,
-                paddingVertical: 10,
-                alignItems: "center",
-                opacity: isSavingAvatar ? 0.7 : 1,
-              }}
-            >
-              <Text
-                selectable
-                style={{
-                  fontSize: 13,
-                  fontWeight: "700",
-                  color: "#3A4D39",
-                  fontFamily: Fonts.rounded,
-                }}
-              >
-                {isSavingAvatar ? "保存中..." : "保存"}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-
-        <View
-          style={{
-            backgroundColor: "#FFFFFF",
-            borderRadius: 20,
-            padding: 20,
-            gap: 12,
-            borderWidth: 1,
-            borderColor: "#EEF1ED",
-            shadowColor: "#141712",
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 6,
-            borderCurve: "continuous",
-          }}
-        >
-          <Text
-            selectable
-            style={{
-              fontSize: 14,
-              fontWeight: "700",
-              color: "#141712",
-              fontFamily: Fonts.rounded,
-            }}
-          >
-            デバッグ通知
-          </Text>
-          <Pressable
-            onPress={() => handleDebugNotification("morning")}
-            style={{
-              backgroundColor: "rgba(168, 223, 142, 0.15)",
-              borderRadius: 12,
-              paddingVertical: 12,
-              paddingHorizontal: 14,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <IconSymbol name="sun.max.fill" size={16} color="#A8DF8E" />
-            <Text
-              selectable
-              style={{
-                fontSize: 12,
-                fontWeight: "700",
-                color: "#3A4D39",
-                fontFamily: Fonts.rounded,
-              }}
-            >
-              朝の通知を出す
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => handleDebugNotification("night")}
-            style={{
-              backgroundColor: "rgba(255, 170, 184, 0.15)",
-              borderRadius: 12,
-              paddingVertical: 12,
-              paddingHorizontal: 14,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <IconSymbol name="moon.stars.fill" size={16} color="#FFAAB8" />
-            <Text
-              selectable
-              style={{
-                fontSize: 12,
-                fontWeight: "700",
-                color: "#6B3E45",
-                fontFamily: Fonts.rounded,
-              }}
-            >
-              夜の通知を出す
-            </Text>
-          </Pressable>
-        </View>
-
-        <View
-          style={{
-            backgroundColor: "#FFFFFF",
-            borderRadius: 20,
-            padding: 20,
-            gap: 12,
-            borderWidth: 1,
-            borderColor: "#EEF1ED",
-            shadowColor: "#141712",
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 6,
-            borderCurve: "continuous",
-          }}
-        >
-          <Text
-            selectable
-            style={{
-              fontSize: 14,
-              fontWeight: "700",
-              color: "#141712",
-              fontFamily: Fonts.rounded,
-            }}
-          >
-            デバッグ設定
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              backgroundColor: "rgba(168, 223, 142, 0.1)",
-              borderRadius: 12,
-              paddingVertical: 12,
-              paddingHorizontal: 14,
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
-              <IconSymbol name="exclamationmark.triangle.fill" size={16} color="#FFA500" />
-              <View style={{ flex: 1 }}>
-                <Text
-                  selectable
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "700",
-                    color: "#3A4D39",
-                    fontFamily: Fonts.rounded,
-                  }}
-                >
-                  アンケート回答制限をスキップ
-                </Text>
-                <Text
-                  selectable
-                  style={{
-                    fontSize: 10,
-                    color: "#718268",
-                    fontFamily: Fonts.rounded,
-                    marginTop: 2,
-                  }}
-                >
-                  デバッグ用: 時間制限なしで回答可能
-                </Text>
-              </View>
-            </View>
-            <Switch
-              value={skipQuestionnaireLimit}
-              onValueChange={handleToggleSkipLimit}
-              trackColor={{ false: "#E5E5E5", true: "rgba(168, 223, 142, 0.5)" }}
-              thumbColor={skipQuestionnaireLimit ? "#A8DF8E" : "#F4F3F4"}
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              backgroundColor: "rgba(255, 170, 184, 0.1)",
-              borderRadius: 12,
-              paddingVertical: 12,
-              paddingHorizontal: 14,
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
-              <IconSymbol name="eye.fill" size={16} color="#FFAAB8" />
-              <View style={{ flex: 1 }}>
-                <Text
-                  selectable
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "700",
-                    color: "#3A4D39",
-                    fontFamily: Fonts.rounded,
-                  }}
-                >
-                  すれ違いをデバッグモードで見る
-                </Text>
-                <Text
-                  selectable
-                  style={{
-                    fontSize: 10,
-                    color: "#718268",
-                    fontFamily: Fonts.rounded,
-                    marginTop: 2,
-                  }}
-                >
-                  デバッグ用: 夜のアンケート未回答でもすれ違いを表示
-                </Text>
-              </View>
-            </View>
-            <Switch
-              value={showEncountersWithoutNight}
-              onValueChange={handleToggleShowEncounters}
-              trackColor={{ false: "#E5E5E5", true: "rgba(255, 170, 184, 0.5)" }}
-              thumbColor={showEncountersWithoutNight ? "#FFAAB8" : "#F4F3F4"}
-            />
-          </View>
-        </View>
-
-        <Pressable
-          onPress={handleLogout}
-          style={{
-            backgroundColor: "#FFFFFF",
-            borderRadius: 20,
-            padding: 20,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 12,
-            borderWidth: 1,
-            borderColor: "#EEF1ED",
-            shadowColor: "#141712",
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 6,
-            borderCurve: "continuous",
-          }}
-        >
-          <View
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 999,
-              backgroundColor: "rgba(255, 170, 184, 0.2)",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <IconSymbol
-              name="rectangle.portrait.and.arrow.right"
-              size={20}
-              color="#FFAAB8"
-            />
-          </View>
-          <Text
-            selectable
-            style={{
-              fontSize: 14,
-              fontWeight: "700",
-              color: "#FFAAB8",
-              fontFamily: Fonts.rounded,
-            }}
-          >
-            ログアウト
-          </Text>
-        </Pressable>
+          <AccountCard
+            avatarUrl={profileAvatarUrl}
+            displayName={session?.user?.user_metadata?.display_name ?? null}
+            email={session?.user?.email ?? null}
+            avatarUrlInput={avatarUrlInput}
+            onAvatarUrlChange={setAvatarUrlInput}
+            onSaveAvatar={handleSaveAvatarUrl}
+            isSavingAvatar={isSavingAvatar}
+          />
+          <DebugNotificationsCard
+            onMorningPress={() => handleDebugNotification("morning")}
+            onNightPress={() => handleDebugNotification("night")}
+          />
+          <DebugSettingsCard
+            skipQuestionnaireLimit={skipQuestionnaireLimit}
+            showEncountersWithoutNight={showEncountersWithoutNight}
+            onToggleSkipLimit={handleToggleSkipLimit}
+            onToggleShowEncounters={handleToggleShowEncounters}
+          />
+          <LogoutCard onLogout={handleLogout} />
         </View>
       </ScrollView>
     </GrassBackground>
