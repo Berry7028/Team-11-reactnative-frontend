@@ -27,7 +27,7 @@ export function LockedView({ message }: LockedViewProps) {
               backgroundColor: "rgba(168, 223, 142, 0.15)",
             }}
           >
-            <IconSymbol name="lock.fill" size={48} color="#FFAAB8" />
+            <IconSymbol name="lock" size={48} color="#FFAAB8" />
           </View>
           <Text
             selectable

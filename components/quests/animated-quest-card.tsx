@@ -178,7 +178,7 @@ export function AnimatedQuestCard({
                 ) : (
                   <>
                     <IconSymbol
-                      name={quest.completed ? "arrow.uturn.backward" : "sparkles"}
+                      name="sparkles"
                       size={18}
                       color="#FFFFFF"
                     />

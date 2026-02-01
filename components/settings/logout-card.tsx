@@ -40,7 +40,7 @@ export function LogoutCard({ onLogout }: LogoutCardProps) {
         }}
       >
         <IconSymbol
-          name="rectangle.portrait.and.arrow.right"
+          name="chevron.right"
           size={20}
           color="#FFAAB8"
         />

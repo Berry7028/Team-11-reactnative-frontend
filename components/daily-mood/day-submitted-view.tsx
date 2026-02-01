@@ -59,7 +59,7 @@ export function DaySubmittedView({
               boxShadow: "0 4px 12px rgba(255, 170, 184, 0.5)",
             }}
           >
-            <IconSymbol name="checkmark" size={18} color="#FFFFFF" />
+            <IconSymbol name="checkmark.circle.fill" size={18} color="#FFFFFF" />
           </View>
         </View>
         <Text
