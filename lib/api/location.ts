@@ -12,7 +12,7 @@ export async function recordLocation(
   const { error } = await supabase.rpc("record_location", {
     p_lat: latitude,
     p_lon: longitude,
-    p_accuracy_m: accuracy ?? null,
+    p_accuracy_m: accuracy != null ? Math.round(accuracy) : null,
     p_recorded_at: new Date().toISOString(),
   });
 
