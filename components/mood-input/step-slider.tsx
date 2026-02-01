@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
   GestureResponderEvent,
   PanResponder,
   PanResponderGestureState,
@@ -46,6 +47,8 @@ export function StepSlider({
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const trackLeftRef = useRef(0);
   const trackRef = useRef<View>(null);
+  const animatedValue = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const selectedIndex = options.findIndex((o) => o.id === selectedId);
   const currentIndex = dragIndex ?? (selectedIndex >= 0 ? selectedIndex : 0);
@@ -53,8 +56,30 @@ export function StepSlider({
     trackWidth > 0 && options.length > 1
       ? (trackWidth - THUMB_SIZE) / (options.length - 1)
       : 0;
-  const thumbLeft = segmentWidth * currentIndex;
   const currentOption = options[currentIndex];
+
+  // アニメーション値を更新
+  useEffect(() => {
+    if (trackWidth > 0) {
+      const targetLeft = segmentWidth * currentIndex;
+      Animated.spring(animatedValue, {
+        toValue: targetLeft,
+        useNativeDriver: true,
+        friction: 8,
+        tension: 40,
+      }).start();
+    }
+  }, [currentIndex, segmentWidth, trackWidth]);
+
+  // ドラッグ開始時のスケールアニメーション
+  const animateScale = (toValue: number) => {
+    Animated.spring(scaleAnim, {
+      toValue,
+      useNativeDriver: true,
+      friction: 5,
+      tension: 40,
+    }).start();
+  };
 
   const panResponder = React.useMemo(
     () =>
@@ -68,6 +93,7 @@ export function StepSlider({
             options.length,
           );
           setDragIndex(index);
+          animateScale(1.15);
         },
         onPanResponderMove: (
           _evt: GestureResponderEvent,
@@ -82,6 +108,9 @@ export function StepSlider({
             options.length,
           );
           setDragIndex(index);
+          // ドラッグ中はアニメーションなしで即座に追従
+          const targetLeft = segmentWidth * index;
+          animatedValue.setValue(targetLeft);
         },
         onPanResponderRelease: (evt: GestureResponderEvent) => {
           const fingerX = evt.nativeEvent.locationX;
@@ -93,10 +122,11 @@ export function StepSlider({
           );
           const clamped = clampIndex(index, options.length - 1);
           setDragIndex(clamped);
+          animateScale(1);
           onSelect(options[clamped].id);
         },
       }),
-    [trackWidth, options, onSelect],
+    [trackWidth, options, onSelect, segmentWidth, animatedValue],
   );
 
   useEffect(() => {
@@ -154,10 +184,14 @@ export function StepSlider({
                 />
               </View>
             ))}
-            <View
+            <Animated.View
               style={{
                 position: "absolute",
-                left: thumbLeft,
+                left: 0,
+                transform: [
+                  { translateX: animatedValue },
+                  { scale: scaleAnim },
+                ],
                 width: THUMB_SIZE,
                 height: THUMB_SIZE,
                 borderRadius: THUMB_SIZE / 2,
@@ -177,7 +211,7 @@ export function StepSlider({
                 size={22}
                 color={currentOption?.text ?? "#FFFFFF"}
               />
-            </View>
+            </Animated.View>
           </>
         )}
       </View>

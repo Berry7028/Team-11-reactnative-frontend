@@ -1,8 +1,10 @@
 import { Image } from "expo-image";
 import { Link } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Animated,
+  Easing,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -24,6 +26,149 @@ const MASCOT_IMAGES: Record<MascotStatus, number> = {
   Great: require("@/assets/mascot/great.png"),
 };
 
+// アニメーション付きクエストカードコンポーネント
+interface AnimatedQuestCardProps {
+  quest: Quest;
+  index: number;
+  totalCount: number;
+  progressPercent: number;
+}
+
+function AnimatedQuestCard({ quest, index, totalCount, progressPercent }: AnimatedQuestCardProps) {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+
+  useEffect(() => {
+    // 遅延をつけて順番にアニメーション（ダンダンダン効果）
+    const delay = index * 120;
+
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        delay,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.cubic),
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        delay,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.cubic),
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        delay,
+        useNativeDriver: true,
+        friction: 8,
+        tension: 50,
+      }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View
+      style={{
+        opacity: fadeAnim,
+        transform: [
+          { translateY: slideAnim },
+          { scale: scaleAnim },
+        ],
+      }}
+    >
+      <Link href="/(tabs)/quests" asChild>
+        <Pressable
+          style={{
+            backgroundColor: "rgba(255,255,255,0.95)",
+            padding: 16,
+            borderRadius: 24,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 14,
+            borderWidth: 1,
+            borderColor: "rgba(255,255,255,0.9)",
+            boxShadow: "0 12px 24px rgba(168, 223, 142, 0.2)",
+            borderCurve: "continuous",
+          }}
+        >
+          <View
+            style={{
+              height: 56,
+              width: 56,
+              borderRadius: 18,
+              backgroundColor: "rgba(255, 170, 184, 0.2)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <IconSymbol name="wind" size={28} color="#FFAAB8" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              selectable
+              style={{
+                fontSize: 10,
+                fontWeight: "700",
+                color: "#A8DF8E",
+                letterSpacing: 0.5,
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              クエスト {index + 1}/{totalCount}
+            </Text>
+            <Text
+              selectable
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: "#3A4D39",
+                marginTop: 4,
+                fontFamily: Fonts.rounded,
+              }}
+              numberOfLines={1}
+            >
+              {quest.title}
+            </Text>
+            <View
+              style={{
+                marginTop: 10,
+                height: 8,
+                borderRadius: 999,
+                backgroundColor: "rgba(168, 223, 142, 0.15)",
+                overflow: "hidden",
+              }}
+            >
+              <View
+                style={{
+                  width: `${progressPercent}%`,
+                  height: "100%",
+                  borderRadius: 999,
+                  backgroundColor: "#A8DF8E",
+                  boxShadow: "0 0 10px rgba(168, 223, 142, 0.6)",
+                }}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              height: 44,
+              width: 44,
+              borderRadius: 999,
+              backgroundColor: "#A8DF8E",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 8px 16px rgba(168, 223, 142, 0.3)",
+            }}
+          >
+            <IconSymbol name="chevron.right" size={18} color="#FFFFFF" />
+          </View>
+        </Pressable>
+      </Link>
+    </Animated.View>
+  );
+}
 
 export default function HomeScreen() {
   const { session } = useAuth();
@@ -32,6 +177,7 @@ export default function HomeScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [mascot, setMascot] = useState<Mascot | null>(null);
   const [isMascotLoading, setIsMascotLoading] = useState(true);
+  const [animationKey, setAnimationKey] = useState(0);
 
   const userUuid = session?.user?.id;
 
@@ -44,6 +190,8 @@ export default function HomeScreen() {
     try {
       const data = await getTodayQuests(userUuid);
       setQuests(data);
+      // クエスト取得時にアニメーションをトリガー
+      setAnimationKey((prev) => prev + 1);
     } catch {
       // エラーは静かに処理（ホーム画面なので）
     }
@@ -278,94 +426,13 @@ export default function HomeScreen() {
         ) : currentQuests.length > 0 ? (
           <View style={{ gap: 12 }}>
             {currentQuests.map((quest, index) => (
-              <Link href="/(tabs)/quests" asChild key={quest.id}>
-                <Pressable
-                  style={{
-                    backgroundColor: "rgba(255,255,255,0.95)",
-                    padding: 16,
-                    borderRadius: 24,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 14,
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.9)",
-                    boxShadow: "0 12px 24px rgba(168, 223, 142, 0.2)",
-                    borderCurve: "continuous",
-                  }}
-                >
-                  <View
-                    style={{
-                      height: 56,
-                      width: 56,
-                      borderRadius: 18,
-                      backgroundColor: "rgba(255, 170, 184, 0.2)",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <IconSymbol name="wind" size={28} color="#FFAAB8" />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text
-                      selectable
-                      style={{
-                        fontSize: 10,
-                        fontWeight: "700",
-                        color: "#A8DF8E",
-                        letterSpacing: 0.5,
-                        fontFamily: Fonts.rounded,
-                      }}
-                    >
-                      クエスト {index + 1}/{currentQuests.length}
-                    </Text>
-                    <Text
-                      selectable
-                      style={{
-                        fontSize: 16,
-                        fontWeight: "700",
-                        color: "#3A4D39",
-                        marginTop: 4,
-                        fontFamily: Fonts.rounded,
-                      }}
-                      numberOfLines={1}
-                    >
-                      {quest.title}
-                    </Text>
-                    <View
-                      style={{
-                        marginTop: 10,
-                        height: 8,
-                        borderRadius: 999,
-                        backgroundColor: "rgba(168, 223, 142, 0.15)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <View
-                        style={{
-                          width: `${progressPercent}%`,
-                          height: "100%",
-                          borderRadius: 999,
-                          backgroundColor: "#A8DF8E",
-                          boxShadow: "0 0 10px rgba(168, 223, 142, 0.6)",
-                        }}
-                      />
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      height: 44,
-                      width: 44,
-                      borderRadius: 999,
-                      backgroundColor: "#A8DF8E",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      boxShadow: "0 8px 16px rgba(168, 223, 142, 0.3)",
-                    }}
-                  >
-                    <IconSymbol name="chevron.right" size={18} color="#FFFFFF" />
-                  </View>
-                </Pressable>
-              </Link>
+              <AnimatedQuestCard
+                key={`${quest.id}-${animationKey}`}
+                quest={quest}
+                index={index}
+                totalCount={currentQuests.length}
+                progressPercent={progressPercent}
+              />
             ))}
           </View>
         ) : quests.length > 0 ? (
