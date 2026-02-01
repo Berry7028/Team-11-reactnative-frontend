@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Alert,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   useWindowDimensions,
@@ -47,6 +48,7 @@ export default function LogScreen() {
   const [thanksStampsCount, setThanksStampsCount] = useState(0);
   const [stampSentIds, setStampSentIds] = useState<Set<number>>(new Set());
   const [sendingEncounterId, setSendingEncounterId] = useState<number | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { width: windowWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -65,30 +67,52 @@ export default function LogScreen() {
   );
 
   // すれ違い情報を取得
+  const loadEncounters = useCallback(async () => {
+    if (!(debugMode || isCompleted)) return;
+
+    setIsLoadingEncounters(true);
+    try {
+      const data = await getMyEncounters();
+      // 今日のすれ違いのみをフィルタ
+      const today = new Date().toISOString().split('T')[0];
+      const todayEncounters = data.filter((encounter) => {
+        const encounterDate = new Date(encounter.last_seen_at).toISOString().split('T')[0];
+        return encounterDate === today;
+      });
+      setEncounters(todayEncounters);
+    } catch (error) {
+      console.error('すれ違い情報の取得に失敗:', error);
+    } finally {
+      setIsLoadingEncounters(false);
+    }
+  }, [debugMode, isCompleted]);
+
+  // プルダウンリフレッシュハンドラ
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await loadEncounters();
+    // スタンプデータも更新
+    if (encounters.length > 0) {
+      try {
+        const [count, sentSet] = await Promise.all([
+          getThanksStampsReceivedCountToday(),
+          getThanksStampSentByEncounterIds(encounters.map((e) => e.id)),
+        ]);
+        setThanksStampsCount(count);
+        setStampSentIds(sentSet);
+      } catch (error) {
+        console.error('スタンプデータの更新に失敗:', error);
+      }
+    }
+    setIsRefreshing(false);
+  }, [loadEncounters, encounters]);
+
   useEffect(() => {
     // デバッグモードがON、または夜アンケートが完了している場合に取得
     if ((debugMode || isCompleted) && !isLoadingQuestionnaire) {
-      const loadEncounters = async () => {
-        setIsLoadingEncounters(true);
-        try {
-          const data = await getMyEncounters();
-          // 今日のすれ違いのみをフィルタ
-          const today = new Date().toISOString().split('T')[0];
-          const todayEncounters = data.filter((encounter) => {
-            const encounterDate = new Date(encounter.last_seen_at).toISOString().split('T')[0];
-            return encounterDate === today;
-          });
-          setEncounters(todayEncounters);
-        } catch (error) {
-          console.error('すれ違い情報の取得に失敗:', error);
-        } finally {
-          setIsLoadingEncounters(false);
-        }
-      };
-
       loadEncounters();
     }
-  }, [isCompleted, isLoadingQuestionnaire, debugMode]);
+  }, [isCompleted, isLoadingQuestionnaire, debugMode, loadEncounters]);
 
   // ログに表示される人が変わったときにスタンプ表示をリセット（件数・送付済み）
   useEffect(() => {
@@ -168,7 +192,10 @@ export default function LogScreen() {
           flexGrow: 0,
         }}
         showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}>
+        showsHorizontalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#FFAAB8" />
+        }>
         {/* 今日のサマリー */}
         <View
           style={{
