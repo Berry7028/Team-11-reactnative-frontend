@@ -150,12 +150,17 @@ export default function DailyMoodScreen() {
 
   useEffect(() => {
     const loadStoredData = async () => {
-      const morning = await getStoredTimestamp(STORAGE_KEYS.morning);
-      const night = await getStoredTimestamp(STORAGE_KEYS.night);
-      const skip = await getDebugSkipLimit();
-      setLastMorningSubmittedAt(morning);
-      setLastNightSubmittedAt(night);
-      setSkipLimit(skip);
+      try {
+        const morning = await getStoredTimestamp(STORAGE_KEYS.morning);
+        const night = await getStoredTimestamp(STORAGE_KEYS.night);
+        const skip = await getDebugSkipLimit();
+        setLastMorningSubmittedAt(morning);
+        setLastNightSubmittedAt(night);
+        setSkipLimit(skip);
+      } catch (error) {
+        console.error("Failed to load stored data:", error);
+        // Continue with default values on error
+      }
     };
     loadStoredData();
   }, []);
