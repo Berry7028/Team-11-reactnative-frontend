@@ -24,8 +24,8 @@ export {
 } from "./stamps";
 
 // User API
-export { getMyProfile, updateMyAvatar } from "./user";
-export type { MyProfile } from "./user";
+export { getMyProfile, updateMyAvatar, updateMyPersonality, getMyPersonality } from "./user";
+export type { MyProfile, MascotPersonality } from "./user";
 
 // Types
 export type {
