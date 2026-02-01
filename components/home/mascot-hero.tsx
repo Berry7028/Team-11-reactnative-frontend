@@ -65,7 +65,7 @@ export function MascotHero({ mascotImage, isMascotLoading, mascotMessage }: Masc
             justifyContent: "center",
           }}
         >
-          <IconSymbol name="star.fill" size={12} color="#A8DF8E" />
+          <IconSymbol name="sparkles" size={12} color="#A8DF8E" />
         </View>
         <View
           style={{
@@ -80,7 +80,7 @@ export function MascotHero({ mascotImage, isMascotLoading, mascotMessage }: Masc
             justifyContent: "center",
           }}
         >
-          <IconSymbol name="leaf.fill" size={16} color="#A8DF8E" />
+          <IconSymbol name="leaf" size={16} color="#A8DF8E" />
         </View>
         <View
           style={{

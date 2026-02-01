@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -34,10 +35,13 @@ const STORAGE_KEYS = {
 
 const DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY = "debug:skipQuestionnaireLimit";
 
-const getDebugSkipLimit = (): boolean => {
-  if (typeof localStorage === "undefined") return false;
-  const raw = localStorage.getItem(DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY);
-  return raw === "true";
+const getDebugSkipLimit = async (): Promise<boolean> => {
+  try {
+    const raw = await AsyncStorage.getItem(DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY);
+    return raw === "true";
+  } catch {
+    return false;
+  }
 };
 
 const padTime = (value: number) => value.toString().padStart(2, "0");
@@ -99,17 +103,23 @@ const formatCountdown = (milliseconds: number) => {
   return `${padTime(hours)}:${padTime(minutes)}:${padTime(seconds)}`;
 };
 
-const getStoredTimestamp = (key: string) => {
-  if (typeof localStorage === "undefined") return null;
-  const raw = localStorage.getItem(key);
-  if (!raw) return null;
-  const value = Number(raw);
-  return Number.isFinite(value) ? value : null;
+const getStoredTimestamp = async (key: string): Promise<number | null> => {
+  try {
+    const raw = await AsyncStorage.getItem(key);
+    if (!raw) return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? value : null;
+  } catch {
+    return null;
+  }
 };
 
-const setStoredTimestamp = (key: string, value: number) => {
-  if (typeof localStorage === "undefined") return;
-  localStorage.setItem(key, String(value));
+const setStoredTimestamp = async (key: string, value: number): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(key, String(value));
+  } catch {
+    // エラーは無視
+  }
 };
 
 export default function DailyMoodScreen() {
@@ -127,6 +137,7 @@ export default function DailyMoodScreen() {
     useState<number | null>(null);
   const [lastNightSubmittedAt, setLastNightSubmittedAt] =
     useState<number | null>(null);
+  const [skipLimit, setSkipLimit] = useState(false);
 
   const userUuid = session?.user?.id;
   const appState = useRef<AppStateStatus>(AppState.currentState);
@@ -138,8 +149,15 @@ export default function DailyMoodScreen() {
   }, []);
 
   useEffect(() => {
-    setLastMorningSubmittedAt(getStoredTimestamp(STORAGE_KEYS.morning));
-    setLastNightSubmittedAt(getStoredTimestamp(STORAGE_KEYS.night));
+    const loadStoredData = async () => {
+      const morning = await getStoredTimestamp(STORAGE_KEYS.morning);
+      const night = await getStoredTimestamp(STORAGE_KEYS.night);
+      const skip = await getDebugSkipLimit();
+      setLastMorningSubmittedAt(morning);
+      setLastNightSubmittedAt(night);
+      setSkipLimit(skip);
+    };
+    loadStoredData();
   }, []);
 
   // アプリのフォアグラウンド/バックグラウンド状態を監視
@@ -164,7 +182,6 @@ export default function DailyMoodScreen() {
 
   const lastSubmittedAt =
     timeOfDay === "day" ? lastMorningSubmittedAt : lastNightSubmittedAt;
-  const skipLimit = getDebugSkipLimit();
   const hasSubmittedThisWindow =
     !skipLimit && lastSubmittedAt !== null && lastSubmittedAt >= windowStart.getTime();
   const nextCountdown = useMemo(
@@ -237,7 +254,7 @@ export default function DailyMoodScreen() {
       });
 
       const submittedAt = Date.now();
-      setStoredTimestamp(STORAGE_KEYS.morning, submittedAt);
+      await setStoredTimestamp(STORAGE_KEYS.morning, submittedAt);
       setLastMorningSubmittedAt(submittedAt);
 
       // 即時フィードバックを表示
@@ -279,7 +296,7 @@ export default function DailyMoodScreen() {
       });
 
       const submittedAt = Date.now();
-      setStoredTimestamp(STORAGE_KEYS.night, submittedAt);
+      await setStoredTimestamp(STORAGE_KEYS.night, submittedAt);
       setLastNightSubmittedAt(submittedAt);
       // 夜アンケート完了フラグを立てる
       await markAsCompleted();
