@@ -9,6 +9,14 @@ export async function recordLocation(
   longitude: number,
   accuracy?: number
 ): Promise<void> {
+  // ログイン状態をチェック
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    // 未ログイン時は静かにスキップ
+    console.log("未ログインのため位置情報送信をスキップ");
+    return;
+  }
+
   const { error } = await supabase.rpc("record_location", {
     p_lat: latitude,
     p_lon: longitude,

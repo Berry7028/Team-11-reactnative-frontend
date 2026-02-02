@@ -34,7 +34,12 @@ TaskManager.defineTask(
             location.coords.accuracy ?? undefined
           );
         } catch (err) {
-          console.error("位置情報の記録に失敗:", err);
+          // 未ログイン時のスキップはエラーとして扱わない
+          if (err instanceof Error && err.message.includes("未ログイン")) {
+            console.log("バックグラウンド: 未ログインのためスキップ");
+          } else {
+            console.error("位置情報の記録に失敗:", err);
+          }
         }
       }
     }
