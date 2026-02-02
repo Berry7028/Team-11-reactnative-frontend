@@ -19,7 +19,7 @@ export function AppHeaderTitle() {
         letterSpacing: 0.3,
       }}
     >
-      chocoLIFE
+      koko
     </Text>
   );
 }
