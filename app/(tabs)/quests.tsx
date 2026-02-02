@@ -7,7 +7,7 @@ import { GrassBackground } from '@/components/grass-background';
 import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
-import { ApiRequestError, getTodayQuests, toggleQuestComplete, type Quest } from '@/lib/api';
+import { ApiRequestError, getMascotState, getTodayQuests, toggleQuestComplete, type Mascot, type MascotStatus, type Quest } from '@/lib/api';
 
 // クエストカテゴリのアイコンマッピング
 const QUEST_ICONS: Record<string, IconSymbolName> = {
@@ -16,6 +16,14 @@ const QUEST_ICONS: Record<string, IconSymbolName> = {
   refresh: 'sun.max.fill',
   exercise: 'figure.walk',
   default: 'heart.fill',
+};
+
+const MASCOT_IMAGES: Record<MascotStatus, number> = {
+  Sad: require('@/assets/mascot/sad.png'),
+  Bad: require('@/assets/mascot/bad.png'),
+  Okay: require('@/assets/mascot/okay.png'),
+  Good: require('@/assets/mascot/good.png'),
+  Great: require('@/assets/mascot/great.png'),
 };
 
 // クエストの画像（デフォルト）
@@ -210,6 +218,7 @@ export default function QuestsScreen() {
   const [togglingQuestId, setTogglingQuestId] = useState<number | null>(null);
   const [fireworkQuestId, setFireworkQuestId] = useState<number | null>(null);
   const [animationKey, setAnimationKey] = useState(0);
+  const [mascot, setMascot] = useState<Mascot | null>(null);
 
   const userUuid = session?.user?.id;
 
@@ -230,18 +239,32 @@ export default function QuestsScreen() {
     }
   }, [userUuid]);
 
+  const fetchMascot = useCallback(async () => {
+    if (!userUuid) {
+      setMascot(null);
+      return;
+    }
+
+    try {
+      const data = await getMascotState(userUuid);
+      setMascot(data);
+    } catch {
+      setMascot(null);
+    }
+  }, [userUuid]);
+
   useEffect(() => {
     const load = async () => {
       setIsLoading(true);
-      await fetchQuests();
+      await Promise.all([fetchQuests(), fetchMascot()]);
       setIsLoading(false);
     };
     load();
-  }, [fetchQuests]);
+  }, [fetchMascot, fetchQuests]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await fetchQuests();
+    await Promise.all([fetchQuests(), fetchMascot()]);
     setIsRefreshing(false);
   };
 
@@ -274,6 +297,7 @@ export default function QuestsScreen() {
   };
 
   const completedCount = quests.filter((q) => q.completed).length;
+  const mascotStatus = mascot?.status ?? 'Okay';
   return (
     <GrassBackground>
       <ScrollView
@@ -327,9 +351,7 @@ export default function QuestsScreen() {
             }}
           >
             <Image
-              source={{
-                uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBgpG_KJPstpM7GGXx-kb1p-fjF2HNBqa0paNYlGjIxfpJtYJheg6M8T9AuPonPlW-Rr63auI00J0Q6WA4EMJ_-pbW6pr4QzG2i6h_Z6Kyznz3Fm4y_NfTClnxtf8qMd6IV0GOkIDh4sk6vJAQeYs2ijcaGVwqLODuO_Ac_1s6l39SffMEGNJK6juZ7eGL4tjO63mMfPy7fy8pBONymn5n7LXyts_DROQv4TrSkzQ-wRXZaYt8fZIdz4dfSSh1mogbP2w_CEWrXLmJ3',
-              }}
+              source={MASCOT_IMAGES[mascotStatus]}
               contentFit="contain"
               style={{ width: 44, height: 44 }}
             />
