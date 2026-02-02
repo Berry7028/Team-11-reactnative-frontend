@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Choco Life",
-    "slug": "choco-life",
+    "name": "koko",
+    "slug": "koko",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "choco-life",
+    "scheme": "koko",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -18,7 +18,7 @@
           "location"
         ]
       },
-      "bundleIdentifier": "com.berry7028.choco-life"
+      "bundleIdentifier": "com.berry7028.koko"
     },
     "android": {
       "adaptiveIcon": {
@@ -41,7 +41,7 @@
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_LOCATION"
       ],
-      "package": "com.berry7028.choco-life"
+      "package": "com.berry7028.koko"
     },
     "web": {
       "output": "static",
