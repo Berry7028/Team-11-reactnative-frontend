@@ -9,7 +9,26 @@ import { AvatarImage } from "@/components/ui/avatar-image";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
 import { useAuth } from "@/hooks/use-auth";
-import { getMyProfile, updateMyAvatar } from "@/lib/api";
+import { getMyProfile, updateMyAvatar, updateMyPersonality, getMyPersonality } from "@/lib/api";
+
+// マスコット性格タグのプリセット候補
+const PERSONALITY_TAGS = [
+  "優しい",
+  "元気いっぱい",
+  "おっとり",
+  "クール",
+  "甘えん坊",
+  "しっかり者",
+  "天然",
+  "ツンデレ",
+  "励まし上手",
+  "おちゃめ",
+  "癒し系",
+  "熱血",
+] as const;
+
+const MAX_PERSONALITY_TAGS = 5;
+const MAX_PERSONALITY_NOTE_LENGTH = 200;
 
 const DEBUG_SKIP_QUESTIONNAIRE_LIMIT_KEY = "debug:skipQuestionnaireLimit";
 const DEBUG_SHOW_ENCOUNTERS_WITHOUT_NIGHT_KEY = "debug:showEncountersWithoutNight";
@@ -57,6 +76,11 @@ export default function SettingsScreen() {
   const [avatarUrlInput, setAvatarUrlInput] = useState("");
   const [isSavingAvatar, setIsSavingAvatar] = useState(false);
 
+  // 性格設定用のstate
+  const [personalityTags, setPersonalityTags] = useState<string[]>([]);
+  const [personalityNote, setPersonalityNote] = useState("");
+  const [isSavingPersonality, setIsSavingPersonality] = useState(false);
+
   const loadProfile = useCallback(async () => {
     try {
       const profile = await getMyProfile();
@@ -65,6 +89,16 @@ export default function SettingsScreen() {
       setAvatarUrlInput(avatarUrl ?? "");
     } catch (error) {
       console.error("プロフィールの取得に失敗:", error);
+    }
+  }, []);
+
+  const loadPersonality = useCallback(async () => {
+    try {
+      const personality = await getMyPersonality();
+      setPersonalityTags(personality?.personality_tags ?? []);
+      setPersonalityNote(personality?.personality_note ?? "");
+    } catch (error) {
+      console.error("性格設定の取得に失敗:", error);
     }
   }, []);
 
@@ -81,8 +115,9 @@ export default function SettingsScreen() {
   useEffect(() => {
     if (session?.user) {
       loadProfile();
+      loadPersonality();
     }
-  }, [session?.user, loadProfile]);
+  }, [session?.user, loadProfile, loadPersonality]);
 
   const handleToggleSkipLimit = async (value: boolean) => {
     await setDebugSkipLimit(value);
@@ -139,6 +174,31 @@ export default function SettingsScreen() {
       Alert.alert("エラー", "アバターURLの保存に失敗しました");
     } finally {
       setIsSavingAvatar(false);
+    }
+  };
+
+  const handleTogglePersonalityTag = (tag: string) => {
+    setPersonalityTags((prev) => {
+      if (prev.includes(tag)) {
+        return prev.filter((t) => t !== tag);
+      }
+      if (prev.length >= MAX_PERSONALITY_TAGS) {
+        Alert.alert("上限", `タグは最大${MAX_PERSONALITY_TAGS}個まで選択できます`);
+        return prev;
+      }
+      return [...prev, tag];
+    });
+  };
+
+  const handleSavePersonality = async () => {
+    setIsSavingPersonality(true);
+    try {
+      await updateMyPersonality(personalityTags, personalityNote || null);
+      Alert.alert("保存完了", "性格設定を保存しました");
+    } catch {
+      Alert.alert("エラー", "性格設定の保存に失敗しました");
+    } finally {
+      setIsSavingPersonality(false);
     }
   };
 
@@ -283,6 +343,161 @@ export default function SettingsScreen() {
               </Text>
             </Pressable>
           </View>
+        </View>
+
+        {/* 性格設定セクション */}
+        <View
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: 20,
+            padding: 20,
+            gap: 16,
+            borderWidth: 1,
+            borderColor: "#EEF1ED",
+            shadowColor: "#141712",
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 6,
+            borderCurve: "continuous",
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <View
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 999,
+                backgroundColor: "rgba(255, 170, 184, 0.2)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <IconSymbol name="sparkles" size={18} color="#FFAAB8" />
+            </View>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: "700",
+                color: "#141712",
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              マスコットの性格
+            </Text>
+          </View>
+
+          <View style={{ gap: 8 }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "700",
+                color: "#718268",
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              マスコットの性格タグ（最大{MAX_PERSONALITY_TAGS}個）
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              {PERSONALITY_TAGS.map((tag) => {
+                const isSelected = personalityTags.includes(tag);
+                return (
+                  <Pressable
+                    key={tag}
+                    onPress={() => handleTogglePersonalityTag(tag)}
+                    style={{
+                      paddingHorizontal: 14,
+                      paddingVertical: 8,
+                      borderRadius: 20,
+                      backgroundColor: isSelected
+                        ? "rgba(168, 223, 142, 0.4)"
+                        : "rgba(168, 223, 142, 0.1)",
+                      borderWidth: 1,
+                      borderColor: isSelected ? "#A8DF8E" : "transparent",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: isSelected ? "700" : "500",
+                        color: isSelected ? "#3A4D39" : "#718268",
+                        fontFamily: Fonts.rounded,
+                      }}
+                    >
+                      {tag}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          <View style={{ gap: 8 }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "700",
+                color: "#718268",
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              補足メモ（最大{MAX_PERSONALITY_NOTE_LENGTH}文字）
+            </Text>
+            <TextInput
+              placeholder="例: 関西弁で話してほしい、厳しめに励ましてほしい..."
+              placeholderTextColor="rgba(113, 130, 104, 0.5)"
+              value={personalityNote}
+              onChangeText={(text) =>
+                setPersonalityNote(text.slice(0, MAX_PERSONALITY_NOTE_LENGTH))
+              }
+              multiline
+              numberOfLines={3}
+              style={{
+                minHeight: 80,
+                borderRadius: 12,
+                backgroundColor: "rgba(168, 223, 142, 0.1)",
+                paddingHorizontal: 14,
+                paddingVertical: 12,
+                fontSize: 13,
+                color: "#141712",
+                fontFamily: Fonts.rounded,
+                textAlignVertical: "top",
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 10,
+                color: "#718268",
+                fontFamily: Fonts.rounded,
+                textAlign: "right",
+              }}
+            >
+              {personalityNote.length}/{MAX_PERSONALITY_NOTE_LENGTH}
+            </Text>
+          </View>
+
+          <Pressable
+            onPress={handleSavePersonality}
+            disabled={isSavingPersonality}
+            style={{
+              backgroundColor: "rgba(255, 170, 184, 0.3)",
+              borderRadius: 12,
+              paddingVertical: 12,
+              alignItems: "center",
+              opacity: isSavingPersonality ? 0.7 : 1,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: "700",
+                color: "#6B3E45",
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              {isSavingPersonality ? "保存中..." : "マスコットの性格を保存"}
+            </Text>
+          </Pressable>
         </View>
 
         <View

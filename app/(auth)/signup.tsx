@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -13,6 +14,7 @@ import { Fonts } from "@/constants/theme";
 import { supabase } from "@/lib/supabase";
 
 export default function SignUpScreen() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,13 +45,17 @@ export default function SignUpScreen() {
     });
     if (error) {
       Alert.alert("新規ユーザー登録に失敗しました", error.message);
+      setLoading(false);
     } else if (!data.session) {
       Alert.alert(
         "確認メールを送信しました",
         "受信箱のリンクを確認してください。",
       );
+      setLoading(false);
+    } else {
+      // セッションがある = 新規登録成功 → オンボーディングへ
+      router.replace("/(onboarding)/personality");
     }
-    setLoading(false);
   };
 
   return (
