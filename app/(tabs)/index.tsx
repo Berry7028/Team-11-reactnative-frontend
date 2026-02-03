@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { RefreshControl, ScrollView } from "react-native";
 
 import { GrassBackground } from "@/components/grass-background";
@@ -50,22 +50,19 @@ export default function HomeScreen() {
     }
   }, [userUuid]);
 
-  useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
-      setIsMascotLoading(true);
-      await Promise.all([fetchQuests(), fetchMascot()]);
-      setIsLoading(false);
-      setIsMascotLoading(false);
-    };
-    load();
-  }, [fetchMascot, fetchQuests]);
-
   useFocusEffect(
     useCallback(() => {
-      if (!userUuid) return;
-      fetchQuests();
-      fetchMascot();
+      if (!userUuid) {
+        setIsLoading(false);
+        setIsMascotLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      setIsMascotLoading(true);
+      Promise.all([fetchQuests(), fetchMascot()]).finally(() => {
+        setIsLoading(false);
+        setIsMascotLoading(false);
+      });
     }, [userUuid, fetchQuests, fetchMascot])
   );
 
