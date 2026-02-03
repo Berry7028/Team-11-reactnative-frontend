@@ -1,16 +1,12 @@
 import { Image } from "expo-image";
 import React from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
+import { CountdownCard } from "@/components/daily-mood/CountdownCard";
+import { IconBadge } from "@/components/daily-mood/IconBadge";
+import { MoodPrimaryButton } from "@/components/daily-mood/MoodPrimaryButton";
 import { GrassBackground } from "@/components/grass-background";
 import { MoodInputSection, type MoodInputData } from "@/components/mood-input-section";
-import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
 
 export interface NightMoodScreenProps {
@@ -96,72 +92,13 @@ export function NightMoodScreen({
               </Text>
             </View>
 
-            <View
-              style={{
-                width: "100%",
-                alignItems: "center",
-                gap: 12,
-                paddingVertical: 32,
-                paddingHorizontal: 24,
-                borderRadius: 24,
-                backgroundColor: "rgba(255,255,255,0.8)",
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.9)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
-              }}
-            >
-              <Text
-                selectable
-                style={{
-                  fontSize: 48,
-                  fontWeight: "700",
-                  color: "#0F172A",
-                  fontVariant: ["tabular-nums"],
-                  fontFamily: Fonts.rounded,
-                  letterSpacing: 2,
-                }}
-              >
-                {nextCountdown}
-              </Text>
-              <Text
-                selectable
-                style={{
-                  fontSize: 12,
-                  fontWeight: "600",
-                  color: "#94A3B8",
-                  fontFamily: Fonts.rounded,
-                }}
-              >
-                {nextWindowLabel} に再回答できます
-              </Text>
-            </View>
+            <CountdownCard
+              nextCountdown={nextCountdown}
+              nextWindowLabel={nextWindowLabel}
+              variant="night"
+            />
 
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-                backgroundColor: "rgba(255,255,255,0.6)",
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                borderRadius: 999,
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.6)",
-              }}
-            >
-              <IconSymbol name="moon.stars.fill" size={18} color="#FFAAB8" />
-              <Text
-                selectable
-                style={{
-                  fontSize: 13,
-                  fontWeight: "700",
-                  color: "#94A3B8",
-                  fontFamily: Fonts.rounded,
-                }}
-              >
-                ゆっくり休んでね
-              </Text>
-            </View>
+            <IconBadge icon="moon.stars.fill" text="ゆっくり休んでね" />
           </View>
         ) : (
           <>
@@ -212,61 +149,18 @@ export function NightMoodScreen({
             />
 
             <View style={{ paddingHorizontal: 24, alignItems: "center", gap: 12 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 8,
-                  backgroundColor: "rgba(255,255,255,0.6)",
-                  paddingHorizontal: 16,
-                  paddingVertical: 6,
-                  borderRadius: 999,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,255,255,0.6)",
-                }}
-              >
-                <IconSymbol name="moon.stars.fill" size={16} color="#FFAAB8" />
-                <Text
-                  selectable
-                  style={{
-                    fontSize: 11,
-                    fontWeight: "700",
-                    color: "#94A3B8",
-                    fontFamily: Fonts.rounded,
-                  }}
-                >
-                  ゆっくり休んでね
-                </Text>
-              </View>
-              <Pressable
+              <IconBadge
+                icon="moon.stars.fill"
+                text="ゆっくり休んでね"
+                size="small"
+              />
+              <MoodPrimaryButton
+                label="おやすみなさい"
+                variant="pink"
+                fullWidth
+                loading={isSubmitting}
                 onPress={onSubmit}
-                disabled={isSubmitting}
-                style={{
-                  width: "100%",
-                  backgroundColor: "#FFAAB8",
-                  borderRadius: 999,
-                  paddingVertical: 16,
-                  alignItems: "center",
-                  boxShadow: "0 8px 18px rgba(255, 170, 184, 0.4)",
-                  opacity: isSubmitting ? 0.6 : 1,
-                }}
-              >
-                {isSubmitting ? (
-                  <ActivityIndicator color="#FFAAB8" />
-                ) : (
-                  <Text
-                    selectable
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "700",
-                      color: "#FFFFFF",
-                      fontFamily: Fonts.rounded,
-                    }}
-                  >
-                    おやすみなさい
-                  </Text>
-                )}
-              </Pressable>
+              />
             </View>
           </>
         )}

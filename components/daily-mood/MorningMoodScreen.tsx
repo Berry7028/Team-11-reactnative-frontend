@@ -1,13 +1,9 @@
 import { Image } from "expo-image";
 import React from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
+import { CountdownCard } from "@/components/daily-mood/CountdownCard";
+import { MoodPrimaryButton } from "@/components/daily-mood/MoodPrimaryButton";
 import { GrassBackground } from "@/components/grass-background";
 import { MoodInputSection, type MoodInputData } from "@/components/mood-input-section";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -207,45 +203,10 @@ export function MorningMoodScreen({
               </Text>
             </View>
 
-            <View
-              style={{
-                width: "100%",
-                alignItems: "center",
-                gap: 12,
-                paddingVertical: 32,
-                paddingHorizontal: 24,
-                borderRadius: 24,
-                backgroundColor: "rgba(255,255,255,0.8)",
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.9)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
-              }}
-            >
-              <Text
-                selectable
-                style={{
-                  fontSize: 48,
-                  fontWeight: "700",
-                  color: "#141712",
-                  fontVariant: ["tabular-nums"],
-                  fontFamily: Fonts.rounded,
-                  letterSpacing: 2,
-                }}
-              >
-                {nextCountdown}
-              </Text>
-              <Text
-                selectable
-                style={{
-                  fontSize: 12,
-                  fontWeight: "600",
-                  color: "#718268",
-                  fontFamily: Fonts.rounded,
-                }}
-              >
-                {nextWindowLabel} に再回答できます
-              </Text>
-            </View>
+            <CountdownCard
+              nextCountdown={nextCountdown}
+              nextWindowLabel={nextWindowLabel}
+            />
           </View>
         ) : (
           <>
@@ -255,44 +216,13 @@ export function MorningMoodScreen({
             />
 
             <View style={{ paddingHorizontal: 24 }}>
-              <Pressable
+              <MoodPrimaryButton
+                label="記録を保存する"
+                variant="green"
+                showIcon
+                loading={isSubmitting}
                 onPress={onSubmit}
-                disabled={isSubmitting}
-                style={{
-                  backgroundColor: "#A8DF8E",
-                  borderRadius: 999,
-                  paddingVertical: 16,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "row",
-                  gap: 8,
-                  boxShadow: "0 10px 18px rgba(168, 223, 142, 0.4)",
-                  opacity: isSubmitting ? 0.6 : 1,
-                }}
-              >
-                {isSubmitting ? (
-                  <ActivityIndicator color="#FFAAB8" />
-                ) : (
-                  <>
-                    <Text
-                      selectable
-                      style={{
-                        color: "#FFFFFF",
-                        fontSize: 14,
-                        fontWeight: "700",
-                        fontFamily: Fonts.rounded,
-                      }}
-                    >
-                      記録を保存する
-                    </Text>
-                    <IconSymbol
-                      name="checkmark.circle.fill"
-                      size={18}
-                      color="#FFFFFF"
-                    />
-                  </>
-                )}
-              </Pressable>
+              />
             </View>
           </>
         )}
