@@ -17,11 +17,10 @@ import type { Quest } from "@/lib/api";
 interface AnimatedQuestCardProps {
   quest: Quest;
   index: number;
-  totalCount: number;
   progressPercent: number;
 }
 
-function AnimatedQuestCard({ quest, index, totalCount, progressPercent }: AnimatedQuestCardProps) {
+function AnimatedQuestCard({ quest, index, progressPercent }: AnimatedQuestCardProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -103,7 +102,7 @@ function AnimatedQuestCard({ quest, index, totalCount, progressPercent }: Animat
                 fontFamily: Fonts.rounded,
               }}
             >
-              クエスト {index + 1}/{totalCount}
+              No.{index + 1}
             </Text>
             <Text
               selectable
@@ -123,7 +122,7 @@ function AnimatedQuestCard({ quest, index, totalCount, progressPercent }: Animat
                 marginTop: 10,
                 height: 8,
                 borderRadius: 999,
-                backgroundColor: "rgba(168, 223, 142, 0.15)",
+                backgroundColor: "rgba(255, 170, 184, 0.2)",
                 overflow: "hidden",
               }}
             >
@@ -132,8 +131,8 @@ function AnimatedQuestCard({ quest, index, totalCount, progressPercent }: Animat
                   width: `${progressPercent}%`,
                   height: "100%",
                   borderRadius: 999,
-                  backgroundColor: "#A8DF8E",
-                  boxShadow: "0 0 10px rgba(168, 223, 142, 0.6)",
+                  backgroundColor: "#FFAAB8",
+                  boxShadow: "0 0 10px rgba(255, 170, 184, 0.6)",
                 }}
               />
             </View>
@@ -164,9 +163,7 @@ interface QuestListSectionProps {
 }
 
 export function QuestListSection({ quests, isLoading, animationKey }: QuestListSectionProps) {
-  const currentQuests = quests.filter((q) => !q.completed).slice(0, 3);
-  const completedCount = quests.filter((q) => q.completed).length;
-  const progressPercent = quests.length > 0 ? (completedCount / quests.length) * 100 : 0;
+  const currentQuests = quests.slice(0, 5);
 
   return (
     <View style={{ paddingHorizontal: 16, gap: 16 }}>
@@ -202,8 +199,7 @@ export function QuestListSection({ quests, isLoading, animationKey }: QuestListS
               key={`${quest.id}-${animationKey}`}
               quest={quest}
               index={index}
-              totalCount={currentQuests.length}
-              progressPercent={progressPercent}
+              progressPercent={quest.completed ? 100 : 0}
             />
           ))}
         </View>
