@@ -1,3 +1,4 @@
+import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useEffect, useState } from "react";
 import { RefreshControl, ScrollView } from "react-native";
 
@@ -59,6 +60,14 @@ export default function HomeScreen() {
     };
     load();
   }, [fetchMascot, fetchQuests]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!userUuid) return;
+      fetchQuests();
+      fetchMascot();
+    }, [userUuid, fetchQuests, fetchMascot])
+  );
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

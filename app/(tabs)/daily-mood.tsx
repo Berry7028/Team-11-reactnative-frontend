@@ -1,4 +1,5 @@
 import { Image } from "expo-image";
+import { type Href, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -115,6 +116,7 @@ const setStoredTimestamp = (key: string, value: number) => {
 };
 
 export default function DailyMoodScreen() {
+  const router = useRouter();
   const [now, setNow] = useState(() => new Date());
   const timeOfDay = useMemo(() => getTimeOfDay(now), [now]);
   const { session } = useAuth();
@@ -242,8 +244,10 @@ export default function DailyMoodScreen() {
       setStoredTimestamp(STORAGE_KEYS.morning, submittedAt);
       setLastMorningSubmittedAt(submittedAt);
 
-      // 即時フィードバックを表示
-      Alert.alert("完了", "記録を保存しました！");
+      // 即時フィードバックを表示（OKでホームへ遷移）
+      Alert.alert("完了", "記録を保存しました！", [
+        { text: "OK", onPress: () => router.replace("/(tabs)" as Href) },
+      ]);
 
       // AI処理はバックグラウンドで非同期実行
       processAIInBackground(userUuid);
