@@ -12,7 +12,14 @@ TaskManager.defineTask(
     error,
   }: TaskManager.TaskManagerTaskBody<{ locations: Location.LocationObject[] }>) => {
     if (error) {
-      console.error("バックグラウンド位置情報タスクエラー:", error);
+      // iOS kCLErrorDomain code 0 = 位置が一時的に不明（シミュレータやExpo Goでよく発生、次の更新で解消する）
+      const isLocationUnknown =
+        typeof error === "object" && error !== null && "code" in error && (error as { code?: number }).code === 0;
+      if (isLocationUnknown) {
+        console.warn("バックグラウンド位置情報: 一時的に取得できません（次の更新を待ちます）");
+      } else {
+        console.error("バックグラウンド位置情報タスクエラー:", error);
+      }
       return;
     }
 

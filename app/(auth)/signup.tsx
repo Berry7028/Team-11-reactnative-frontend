@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -54,7 +54,7 @@ export default function SignUpScreen() {
       setLoading(false);
     } else {
       // セッションがある = 新規登録成功 → オンボーディングへ
-      router.replace("/(onboarding)/personality");
+      router.replace("/(onboarding)/personality" as Href);
     }
   };
 
