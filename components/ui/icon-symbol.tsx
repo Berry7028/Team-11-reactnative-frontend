@@ -49,6 +49,7 @@ const MAPPING = {
   'moon.zzz.fill': 'bedtime',
   'exclamationmark.triangle.fill': 'warning',
   'bed.double.fill': 'hotel',
+  'lock.fill': 'lock',
 } as IconMapping;
 
 /**
