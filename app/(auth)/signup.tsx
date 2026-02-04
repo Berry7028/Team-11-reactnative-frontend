@@ -70,7 +70,7 @@ export default function SignUpScreen() {
       <View style={authStyles.formFields}>
         <FormField
           label="表示名"
-          placeholder="例）たろう"
+          placeholder=""
           value={username}
           onChangeText={setUsername}
         />

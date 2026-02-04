@@ -31,7 +31,11 @@ export default function SignInScreen() {
       password,
     });
     if (error) {
-      Alert.alert("ログインに失敗しました", error.message);
+      const message =
+        error.message === "Invalid login credentials"
+          ? "メールアドレスまたはパスワードが正しくありません。もう一度お確かめください。"
+          : error.message;
+      Alert.alert("ログインに失敗しました", message);
     }
     setLoading(false);
   };
