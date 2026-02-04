@@ -9,6 +9,7 @@
 - [APIエンドポイント一覧](#apiエンドポイント一覧)
 - [朝夜アンケートAPI](#朝夜アンケートapi)
 - [AIレコメンデーションAPI](#aiレコメンデーションapi)
+- [マスコットAPI](#マスコットapi)
 - [クエストAPI](#クエストapi)
 - [完全なフロー](#完全なフロー)
 - [データベーススキーマ](#データベーススキーマ)
@@ -53,6 +54,8 @@
 
 - `POST /api/ai/recommendations/` - クエストとマスコット状態を生成
 - `POST /api/ai/hints/` - プロンプトに対するヒントを返す（ダミー実装）
+- `GET /api/ai/mascot-state/` - マスコット状態を取得
+- `POST /api/ai/onboarding/complete/` - マスコット生成オンボーディング
 
 ### クエスト管理
 
@@ -269,6 +272,86 @@ X-User-UUID: <ユーザーのUUID> (必須)
 ```json
 {
   "hint": "Hint for: 質問やプロンプト..."
+}
+```
+
+---
+
+## マスコットAPI
+
+### GET /api/ai/mascot-state/
+
+マスコット状態（status/message/生成画像URL）を取得します。
+
+#### リクエスト
+
+**ヘッダー:**
+```
+X-User-UUID: <ユーザーのUUID> (必須)
+```
+
+#### レスポンス
+
+**成功時 (200 OK):**
+```json
+{
+  "status": "Good",
+  "message": "今日もよく頑張ったね！",
+  "image_urls": {
+    "Sad": "https://.../sad.png",
+    "Bad": "https://.../bad.png",
+    "Okay": "https://.../okay.png",
+    "Good": "https://.../good.png",
+    "Great": "https://.../great.png"
+  }
+}
+```
+
+**エラー時 (404 Not Found):**
+```json
+{
+  "error": "mascot not found"
+}
+```
+
+---
+
+### POST /api/ai/onboarding/complete/
+
+アンケート回答を元に、ユーザー専用のマスコット画像（5表情）を生成し保存します。
+
+#### リクエスト
+
+**ヘッダー:**
+```
+X-User-UUID: <ユーザーのUUID> (必須)
+Content-Type: application/json
+```
+
+**ボディ:**
+```json
+{
+  "personality": "元気いっぱい",
+  "favorite_color": "赤系",
+  "support_style": "元気に励ます",
+  "activity_level": "アクティブ"
+}
+```
+
+#### レスポンス
+
+**成功時 (201 Created):**
+```json
+{
+  "mascot_id": "550e8400-e29b-41d4-a716-446655440000",
+  "image_urls": {
+    "Sad": "https://.../sad.png",
+    "Bad": "https://.../bad.png",
+    "Okay": "https://.../okay.png",
+    "Good": "https://.../good.png",
+    "Great": "https://.../great.png"
+  },
+  "message": "あなた専用のキャラクターが完成しました！"
 }
 ```
 
@@ -555,6 +638,9 @@ Body: {
 | `uuid` | text | Supabaseの`public.users`テーブルの`uuid`（主キー） |
 | `status` | text | マスコット状態（`Sad` / `Bad` / `Okay` / `Good` / `Great`） |
 | `message` | text | マスコットからのメッセージ |
+| `personality_tags` | text[] | 性格タグ（最大5個） |
+| `personality_note` | text | 性格に関する自由入力 |
+| `image_urls` | jsonb | 表情ごとの画像URL |
 
 ---
 
@@ -564,7 +650,12 @@ Body: {
 |--------|------|
 | `OPENAI_API_KEY` | OpenAI APIキー |
 | `SUPABASE_URL` | Supabase プロジェクトURL |
-| `SUPABASE_KEY` | Supabase APIキー |
+| `SUPABASE_KEY` | Supabase APIキー（anon） |
+| `SUPABASE_SERVICE_KEY` | Supabase service roleキー（サーバー専用） |
+| `GOOGLE_GENAI_API_KEY` | Gemini 画像生成APIキー |
+| `MASCOT_REFERENCE_BUCKET` | 参照画像バケット名（例: `mascot-references`） |
+| `MASCOT_REFERENCE_PATHS` | 参照画像のパス（例: `base.png`） |
+| `MASCOT_IMAGES_BUCKET` | 生成画像バケット名（例: `mascot-images`） |
 
 ---
 
