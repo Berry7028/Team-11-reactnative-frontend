@@ -3,6 +3,8 @@ import type {
   HintRequest,
   HintResponse,
   Mascot,
+  MascotOnboardingRequest,
+  MascotOnboardingResponse,
   RecommendationsResponse,
 } from "./types";
 
@@ -36,6 +38,20 @@ export async function getHint(
   data: HintRequest
 ): Promise<HintResponse> {
   return apiRequest<HintResponse>("/api/ai/hints/", {
+    method: "POST",
+    body: data,
+    userUuid,
+  });
+}
+
+/**
+ * マスコット画像生成オンボーディング
+ */
+export async function completeMascotOnboarding(
+  userUuid: string,
+  data: MascotOnboardingRequest
+): Promise<MascotOnboardingResponse> {
+  return apiRequest<MascotOnboardingResponse>("/api/ai/onboarding/complete/", {
     method: "POST",
     body: data,
     userUuid,

@@ -8,7 +8,7 @@ export {
 } from "./questionnaire";
 
 // AI API
-export { generateRecommendations, getMascotState, getHint } from "./ai";
+export { generateRecommendations, getMascotState, getHint, completeMascotOnboarding } from "./ai";
 
 // Quests API
 export { getTodayQuests, toggleQuestComplete } from "./quests";
@@ -32,12 +32,15 @@ export type {
   Mood,
   Condition,
   MascotStatus,
+  MascotImageUrls,
   QuestionnaireRequest,
   QuestionnaireResponse,
   Quest,
   RecommendedQuest,
   Mascot,
   RecommendationsResponse,
+  MascotOnboardingRequest,
+  MascotOnboardingResponse,
   HintRequest,
   HintResponse,
   ApiError,
