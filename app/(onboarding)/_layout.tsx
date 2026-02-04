@@ -9,6 +9,7 @@ export default function OnboardingLayout() {
       }}
     >
       <Stack.Screen name="personality" />
+      <Stack.Screen name="mascot-setup" />
     </Stack>
   );
 }

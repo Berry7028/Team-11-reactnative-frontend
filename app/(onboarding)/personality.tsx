@@ -71,6 +71,10 @@ export default function PersonalityOnboardingScreen() {
     router.replace("/(tabs)");
   };
 
+  const handleMascotSetup = () => {
+    router.push("/(onboarding)/mascot-setup");
+  };
+
   return (
     <GrassBackground>
       <SafeAreaView style={{ flex: 1 }}>
@@ -237,6 +241,65 @@ export default function PersonalityOnboardingScreen() {
                 {personalityNote.length}/{MAX_PERSONALITY_NOTE_LENGTH}
               </Text>
             </View>
+          </View>
+
+          {/* マスコット設定への案内 */}
+          <View
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 20,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: "rgba(168, 223, 142, 0.3)",
+              gap: 8,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: "700",
+                color: "#141712",
+                fontFamily: Fonts.rounded,
+              }}
+            >
+              性格とは別に、マスコットの見た目も設定できます
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#718268",
+                fontFamily: Fonts.rounded,
+                lineHeight: 18,
+              }}
+            >
+              好きな色や応援スタイルに合わせて、あなただけの見た目を作ります。
+            </Text>
+            <Pressable
+              onPress={handleMascotSetup}
+              style={{
+                marginTop: 8,
+                backgroundColor: "#A8DF8E",
+                borderRadius: 14,
+                paddingVertical: 12,
+                alignItems: "center",
+                shadowColor: "#A8DF8E",
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.25,
+                shadowRadius: 6,
+                elevation: 3,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "700",
+                  color: "#2F3B2C",
+                  fontFamily: Fonts.rounded,
+                }}
+              >
+                マスコット設定へ
+              </Text>
+            </Pressable>
           </View>
 
           {/* ボタン */}
