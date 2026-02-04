@@ -1,10 +1,10 @@
 import { Image } from "expo-image";
-import React from "react";
+import React, { useMemo } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
-import type { Mascot, MascotStatus } from "@/lib/api";
+import type { Mascot, MascotImageUrls, MascotStatus } from "@/lib/api";
 
 const MASCOT_IMAGES: Record<MascotStatus, number> = {
   Sad: require("@/assets/mascot/sad.png"),
@@ -17,11 +17,18 @@ const MASCOT_IMAGES: Record<MascotStatus, number> = {
 interface MascotSectionProps {
   mascot: Mascot | null;
   isLoading: boolean;
+  imageUrls?: MascotImageUrls;
 }
 
-export function MascotSection({ mascot, isLoading }: MascotSectionProps) {
+export function MascotSection({ mascot, isLoading, imageUrls }: MascotSectionProps) {
   const mascotStatus = mascot?.status ?? "Okay";
   const mascotMessage = mascot?.message ?? "今日も一歩ずつ進もう。";
+  const imageSource = useMemo(() => {
+    if (imageUrls && imageUrls[mascotStatus]) {
+      return { uri: imageUrls[mascotStatus] };
+    }
+    return MASCOT_IMAGES[mascotStatus];
+  }, [imageUrls, mascotStatus]);
 
   return (
     <View
@@ -106,7 +113,7 @@ export function MascotSection({ mascot, isLoading }: MascotSectionProps) {
           }}
         />
         <Image
-          source={MASCOT_IMAGES[mascotStatus]}
+          source={imageSource}
           contentFit="contain"
           style={{ width: 220, height: 220 }}
         />
