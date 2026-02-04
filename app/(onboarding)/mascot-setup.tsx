@@ -28,6 +28,44 @@ const QUESTIONS = [
     ],
   },
   {
+    key: "social_energy",
+    title: "人と過ごす時のエネルギーは？",
+    options: [
+      "人といると元気になる",
+      "ほどよくバランス",
+      "一人の時間で充電する",
+    ],
+  },
+  {
+    key: "decision_style",
+    title: "判断のしかたに近いのは？",
+    options: [
+      "論理や事実を重視",
+      "気持ちや共感を重視",
+      "状況で使い分ける",
+    ],
+  },
+  {
+    key: "change_preference",
+    title: "予定や変化に対しては？",
+    options: ["計画通りが安心", "柔軟に合わせたい", "ほどよく両方"],
+  },
+  {
+    key: "stress_coping",
+    title: "ストレス時の回復方法は？",
+    options: [
+      "一人で落ち着く",
+      "誰かと話す",
+      "体を動かす",
+      "よく寝る・休む",
+    ],
+  },
+  {
+    key: "emotional_expression",
+    title: "気持ちの表し方に近いのは？",
+    options: ["表情や言葉に出す", "内に留めがち", "行動で示す"],
+  },
+  {
     key: "favorite_color",
     title: "好きな色は？",
     options: ["赤系", "青系", "緑系", "黄色系", "紫系", "ピンク系"],
@@ -59,6 +97,11 @@ export default function MascotSetupScreen() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<QuestionKey, string>>({
     personality: "",
+    social_energy: "",
+    decision_style: "",
+    change_preference: "",
+    stress_coping: "",
+    emotional_expression: "",
     favorite_color: "",
     support_style: "",
     activity_level: "",
@@ -68,6 +111,10 @@ export default function MascotSetupScreen() {
   const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentQuestion = QUESTIONS[step];
+  const questionnaireProgress = useMemo(() => {
+    if (!QUESTIONS.length) return 0;
+    return Math.round(((step + 1) / QUESTIONS.length) * 100);
+  }, [step]);
 
   const progressText = useMemo(() => {
     const percent = Math.min(progress, 100);
@@ -109,6 +156,11 @@ export default function MascotSetupScreen() {
         favorite_color: nextAnswers.favorite_color,
         support_style: nextAnswers.support_style,
         activity_level: nextAnswers.activity_level,
+        social_energy: nextAnswers.social_energy,
+        decision_style: nextAnswers.decision_style,
+        change_preference: nextAnswers.change_preference,
+        stress_coping: nextAnswers.stress_coping,
+        emotional_expression: nextAnswers.emotional_expression,
       });
 
       clearProgressTimer();
@@ -220,7 +272,7 @@ export default function MascotSetupScreen() {
                 fontFamily: Fonts.rounded,
               }}
             >
-              マスコットの見た目を決めよう
+              あなたの雰囲気を教えて
             </Text>
             <Text
               style={{
@@ -230,7 +282,7 @@ export default function MascotSetupScreen() {
                 lineHeight: 20,
               }}
             >
-              性格設定とは別に、見た目の好みを教えてください。
+              いくつかの質問に答えると、あなたに合うマスコットが完成します。
             </Text>
           </View>
 
@@ -248,6 +300,15 @@ export default function MascotSetupScreen() {
               />
             ))}
           </View>
+          <Text
+            style={{
+              fontSize: 12,
+              color: "#718268",
+              fontFamily: Fonts.rounded,
+            }}
+          >
+            進捗 {step + 1} / {QUESTIONS.length}（{questionnaireProgress}%）
+          </Text>
 
           <View
             style={{

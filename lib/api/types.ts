@@ -69,6 +69,11 @@ export interface MascotOnboardingRequest {
   favorite_color: string;
   support_style: string;
   activity_level: string;
+  social_energy: string;
+  decision_style: string;
+  change_preference: string;
+  stress_coping: string;
+  emotional_expression: string;
 }
 
 export interface MascotOnboardingResponse {
