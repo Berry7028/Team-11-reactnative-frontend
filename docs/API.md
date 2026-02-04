@@ -654,7 +654,8 @@ Body: {
 | `SUPABASE_SERVICE_KEY` | Supabase service roleキー（サーバー専用） |
 | `GOOGLE_GENAI_API_KEY` | Gemini 画像生成APIキー |
 | `MASCOT_REFERENCE_BUCKET` | 参照画像バケット名（例: `mascot-references`） |
-| `MASCOT_REFERENCE_PATHS` | 参照画像のパス（例: `base.png`） |
+| `MASCOT_REFERENCE_PREFIX` | 参照画像フォルダー（例: `references`、未指定ならバケット直下） |
+| `MASCOT_REFERENCE_PATHS` | 参照画像のパス（カンマ区切り、指定時はこの順で使用） |
 | `MASCOT_IMAGES_BUCKET` | 生成画像バケット名（例: `mascot-images`） |
 
 ---
