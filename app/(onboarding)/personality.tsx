@@ -67,7 +67,7 @@ export default function PersonalityOnboardingScreen() {
 
   const handleSkip = () => {
     // スキップして次へ進む
-    router.replace("/(tabs)");
+    router.replace("/(onboarding)/mascot-setup");
   };
 
   const handleSave = () => {
