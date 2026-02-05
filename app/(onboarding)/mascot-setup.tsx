@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -107,6 +107,7 @@ export default function MascotSetupScreen() {
     activity_level: "",
   });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAdvancing, setIsAdvancing] = useState(false);
   const [progress, setProgress] = useState(0);
   const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -121,6 +122,10 @@ export default function MascotSetupScreen() {
     return `${percent}%`;
   }, [progress]);
 
+  useEffect(() => {
+    setIsAdvancing(false);
+  }, [step]);
+
   const clearProgressTimer = () => {
     if (progressTimer.current) {
       clearInterval(progressTimer.current);
@@ -129,6 +134,9 @@ export default function MascotSetupScreen() {
   };
 
   const handleSelect = async (value: string) => {
+    if (isAdvancing || isGenerating) return;
+    setIsAdvancing(true);
+
     const nextAnswers = { ...answers, [currentQuestion.key]: value };
     setAnswers(nextAnswers);
 
@@ -138,6 +146,7 @@ export default function MascotSetupScreen() {
     }
 
     if (!userUuid) {
+      setIsAdvancing(false);
       Alert.alert("エラー", "ユーザー情報が取得できませんでした");
       return;
     }
@@ -173,6 +182,7 @@ export default function MascotSetupScreen() {
       clearProgressTimer();
       setIsGenerating(false);
       setProgress(0);
+      setIsAdvancing(false);
       Alert.alert("エラー", "キャラクター生成に失敗しました。もう一度お試しください。");
     }
   };
@@ -351,6 +361,7 @@ export default function MascotSetupScreen() {
                 <Pressable
                   key={option}
                   onPress={() => handleSelect(option)}
+                  disabled={isAdvancing || isGenerating}
                   style={{
                     paddingVertical: 14,
                     paddingHorizontal: 16,
@@ -358,6 +369,7 @@ export default function MascotSetupScreen() {
                     backgroundColor: "rgba(168, 223, 142, 0.15)",
                     borderWidth: 1,
                     borderColor: "rgba(168, 223, 142, 0.35)",
+                    opacity: isAdvancing || isGenerating ? 0.6 : 1,
                   }}
                 >
                   <Text
@@ -377,7 +389,12 @@ export default function MascotSetupScreen() {
 
             <Pressable
               onPress={handleBack}
-              style={{ alignItems: "center", paddingVertical: 10 }}
+              disabled={isAdvancing || isGenerating}
+              style={{
+                alignItems: "center",
+                paddingVertical: 10,
+                opacity: isAdvancing || isGenerating ? 0.6 : 1,
+              }}
             >
               <Text
                 style={{
