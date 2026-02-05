@@ -84,7 +84,11 @@ export default function HomeScreen() {
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
         }
       >
-      <MascotSection mascot={mascot} isLoading={isMascotLoading} />
+      <MascotSection
+        mascot={mascot}
+        isLoading={isMascotLoading}
+        imageUrls={mascot?.image_urls}
+      />
 
       <QuestListSection quests={quests} isLoading={isLoading} animationKey={animationKey} />
     </ScrollView>

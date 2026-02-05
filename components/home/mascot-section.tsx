@@ -1,10 +1,10 @@
 import { Image } from "expo-image";
-import React from "react";
+import React, { useMemo } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
-import type { Mascot, MascotStatus } from "@/lib/api";
+import type { Mascot, MascotImageUrls, MascotStatus } from "@/lib/api";
 
 const MASCOT_IMAGES: Record<MascotStatus, number> = {
   Sad: require("@/assets/mascot/sad.png"),
@@ -17,11 +17,18 @@ const MASCOT_IMAGES: Record<MascotStatus, number> = {
 interface MascotSectionProps {
   mascot: Mascot | null;
   isLoading: boolean;
+  imageUrls?: MascotImageUrls;
 }
 
-export function MascotSection({ mascot, isLoading }: MascotSectionProps) {
+export function MascotSection({ mascot, isLoading, imageUrls }: MascotSectionProps) {
   const mascotStatus = mascot?.status ?? "Okay";
   const mascotMessage = mascot?.message ?? "今日も一歩ずつ進もう。";
+  const imageSource = useMemo(() => {
+    if (imageUrls && imageUrls[mascotStatus]) {
+      return { uri: imageUrls[mascotStatus] };
+    }
+    return MASCOT_IMAGES[mascotStatus];
+  }, [imageUrls, mascotStatus]);
 
   return (
     <View
@@ -105,11 +112,63 @@ export function MascotSection({ mascot, isLoading }: MascotSectionProps) {
             boxShadow: "0 0 60px rgba(168, 223, 142, 0.5)",
           }}
         />
-        <Image
-          source={MASCOT_IMAGES[mascotStatus]}
-          contentFit="contain"
-          style={{ width: 220, height: 220 }}
-        />
+        <View
+          style={{
+            width: 220,
+            height: 220,
+            borderRadius: 999,
+            overflow: "hidden",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(255,255,255,0.25)",
+            borderWidth: 2,
+            borderColor: "rgba(0,0,0,0.7)",
+            boxShadow: "0 0 64px rgba(255,255,255,0.55)",
+            shadowColor: "#FFFFFF",
+            shadowOpacity: 0.75,
+            shadowRadius: 34,
+            shadowOffset: { width: 0, height: 0 },
+          }}
+        >
+          <Image
+            source={imageSource}
+            contentFit="cover"
+            style={{ width: 220, height: 220, borderRadius: 999 }}
+          />
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: 999,
+              borderWidth: 28,
+              borderColor: "rgba(255,255,255,0.18)",
+              boxShadow: "inset 0 0 48px rgba(255,255,255,0.7)",
+            }}
+          />
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              inset: -10,
+              borderRadius: 999,
+              borderWidth: 16,
+              borderColor: "rgba(255,255,255,0.16)",
+              boxShadow: "0 0 56px rgba(255,255,255,0.45)",
+            }}
+          />
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              inset: -18,
+              borderRadius: 999,
+              borderWidth: 20,
+              borderColor: "rgba(255,255,255,0.1)",
+              boxShadow: "0 0 72px rgba(255,255,255,0.35)",
+            }}
+          />
+        </View>
       </View>
       <View
         style={{

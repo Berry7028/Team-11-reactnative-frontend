@@ -17,6 +17,8 @@ export type Condition =
 // マスコットの状態
 export type MascotStatus = "Sad" | "Bad" | "Okay" | "Good" | "Great";
 
+export type MascotImageUrls = Record<MascotStatus, string>;
+
 // アンケートリクエスト
 export interface QuestionnaireRequest {
   mood: Mood;
@@ -58,6 +60,25 @@ export interface RecommendedQuest {
 // マスコット状態
 export interface Mascot {
   status: MascotStatus;
+  message: string;
+  image_urls?: MascotImageUrls;
+}
+
+export interface MascotOnboardingRequest {
+  personality: string;
+  favorite_color: string;
+  support_style: string;
+  activity_level: string;
+  social_energy: string;
+  decision_style: string;
+  change_preference: string;
+  stress_coping: string;
+  emotional_expression: string;
+}
+
+export interface MascotOnboardingResponse {
+  mascot_id: string;
+  image_urls: MascotImageUrls;
   message: string;
 }
 

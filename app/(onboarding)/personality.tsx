@@ -53,12 +53,11 @@ export default function PersonalityOnboardingScreen() {
     });
   };
 
-  const handleSave = async () => {
+  const savePersonalityAndGo = async (nextRoute: "/(tabs)" | "/(onboarding)/mascot-setup") => {
     setIsSaving(true);
     try {
       await updateMyPersonality(personalityTags, personalityNote || null);
-      // 保存完了後、メイン画面へ遷移
-      router.replace("/(tabs)");
+      router.push(nextRoute);
     } catch {
       Alert.alert("エラー", "性格設定の保存に失敗しました");
     } finally {
@@ -69,6 +68,10 @@ export default function PersonalityOnboardingScreen() {
   const handleSkip = () => {
     // スキップして次へ進む
     router.replace("/(tabs)");
+  };
+
+  const handleSave = () => {
+    savePersonalityAndGo("/(onboarding)/mascot-setup");
   };
 
   return (
@@ -265,7 +268,7 @@ export default function PersonalityOnboardingScreen() {
                   fontFamily: Fonts.rounded,
                 }}
               >
-                {isSaving ? "保存中..." : "保存して始める"}
+                {isSaving ? "保存中..." : "保存して進める"}
               </Text>
             </Pressable>
 

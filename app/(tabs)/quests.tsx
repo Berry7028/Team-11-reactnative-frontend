@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Animated, Easing, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { FireworksEffect } from '@/components/fireworks-effect';
@@ -298,6 +298,13 @@ export default function QuestsScreen() {
 
   const completedCount = quests.filter((q) => q.completed).length;
   const mascotStatus = mascot?.status ?? 'Okay';
+  const mascotImageSource = useMemo(() => {
+    const imageUrls = mascot?.image_urls;
+    if (imageUrls && imageUrls[mascotStatus]) {
+      return { uri: imageUrls[mascotStatus] };
+    }
+    return MASCOT_IMAGES[mascotStatus];
+  }, [mascot?.image_urls, mascotStatus]);
   return (
     <GrassBackground>
       <ScrollView
@@ -351,7 +358,7 @@ export default function QuestsScreen() {
             }}
           >
             <Image
-              source={MASCOT_IMAGES[mascotStatus]}
+              source={mascotImageSource}
               contentFit="contain"
               style={{ width: 44, height: 44 }}
             />
