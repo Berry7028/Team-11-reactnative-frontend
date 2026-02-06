@@ -1,16 +1,30 @@
-import { Redirect, Tabs, usePathname } from "expo-router";
+import {
+  type MaterialTopTabNavigationEventMap,
+  type MaterialTopTabNavigationOptions,
+  createMaterialTopTabNavigator,
+} from "@react-navigation/material-top-tabs";
+import type { ParamListBase, TabNavigationState } from "@react-navigation/native";
+import { Redirect, withLayoutContext } from "expo-router";
 import React from "react";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppHeaderTitle } from "@/components/app-header-title";
-import { HapticTab } from "@/components/haptic-tab";
-import { IconSymbol } from "@/components/ui/icon-symbol";
+import { CustomTabBar } from "@/components/custom-tab-bar";
 import { useAuth } from "@/hooks/use-auth";
+
+const { Navigator } = createMaterialTopTabNavigator();
+
+const MaterialTopTabs = withLayoutContext<
+  MaterialTopTabNavigationOptions,
+  typeof Navigator,
+  TabNavigationState<ParamListBase>,
+  MaterialTopTabNavigationEventMap
+>(Navigator);
 
 export default function TabLayout() {
   const { session, isLoading } = useAuth();
-  const pathname = usePathname();
-  const isQuestsOrMood =
-    Boolean(pathname?.includes("quests") || pathname?.includes("daily-mood"));
+  const insets = useSafeAreaInsets();
 
   if (isLoading) {
     return null;
@@ -21,77 +35,34 @@ export default function TabLayout() {
   }
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: isQuestsOrMood ? "#FFAAB8" : "#A8DF8E",
-        tabBarInactiveTintColor: "#8E9A8D",
-        tabBarStyle: {
-          backgroundColor: "#FFFFFF",
-          borderTopColor: "#FFAAB8",
-          borderTopWidth: 1,
-          height: 72,
-          paddingBottom: 14,
-          paddingTop: 8,
-        },
-        headerStyle: {
+    <View style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+      <View
+        style={{
+          paddingTop: insets.top,
           backgroundColor: "#FFFFFF",
           borderBottomColor: "#FFAAB8",
           borderBottomWidth: 1,
-        },
-        headerTitle: () => <AppHeaderTitle />,
-        headerTitleAlign: "left",
-        headerShadowVisible: false,
-        tabBarButton: HapticTab,
-      }}
-    >
-      <Tabs.Screen
-        name="log"
-        options={{
-          title: "ログ",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="book.closed.fill" color={color} />
-          ),
+          paddingHorizontal: 16,
+          paddingBottom: 12,
         }}
-      />
-      <Tabs.Screen
-        name="quests"
-        options={{
-          title: "クエスト",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="checkmark.circle.fill" color={color} />
-          ),
+      >
+        <AppHeaderTitle />
+      </View>
+      <MaterialTopTabs
+        tabBarPosition="bottom"
+        tabBar={(props) => <CustomTabBar {...props} />}
+        screenOptions={{
+          lazy: false,
+          swipeEnabled: true,
+          animationEnabled: true,
         }}
-      />
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "ホーム",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={36} name="house.fill" color={color} />
-          ),
-          tabBarItemStyle: {
-            marginTop: -4,
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="daily-mood"
-        options={{
-          title: "気分",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="heart.circle.fill" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "設定",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="gearshape.fill" color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+      >
+        <MaterialTopTabs.Screen name="log" options={{ title: "ログ" }} />
+        <MaterialTopTabs.Screen name="quests" options={{ title: "クエスト" }} />
+        <MaterialTopTabs.Screen name="index" options={{ title: "ホーム" }} />
+        <MaterialTopTabs.Screen name="daily-mood" options={{ title: "気分" }} />
+        <MaterialTopTabs.Screen name="settings" options={{ title: "設定" }} />
+      </MaterialTopTabs>
+    </View>
   );
 }
