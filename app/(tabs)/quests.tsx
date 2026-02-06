@@ -298,13 +298,10 @@ export default function QuestsScreen() {
 
   const completedCount = quests.filter((q) => q.completed).length;
   const mascotStatus = mascot?.status ?? 'Okay';
-  const mascotImageSource = useMemo(() => {
-    const imageUrls = mascot?.image_urls;
-    if (imageUrls && imageUrls[mascotStatus]) {
-      return { uri: imageUrls[mascotStatus] };
-    }
-    return MASCOT_IMAGES[mascotStatus];
-  }, [mascot?.image_urls, mascotStatus]);
+  const mascotImageSource = useMemo(
+    () => MASCOT_IMAGES[mascotStatus],
+    [mascotStatus]
+  );
   return (
     <GrassBackground>
       <ScrollView
