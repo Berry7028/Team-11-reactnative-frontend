@@ -3,12 +3,15 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  AppState,
+  type AppStateStatus,
   Pressable,
   SafeAreaView,
   ScrollView,
   Text,
   View,
 } from "react-native";
+import * as Notifications from "expo-notifications";
 
 import { GrassBackground } from "@/components/grass-background";
 import { Fonts } from "@/constants/theme";
@@ -110,6 +113,7 @@ export default function MascotSetupScreen() {
   const [isAdvancing, setIsAdvancing] = useState(false);
   const [progress, setProgress] = useState(0);
   const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const appState = useRef<AppStateStatus>(AppState.currentState);
 
   const currentQuestion = QUESTIONS[step];
   const questionnaireProgress = useMemo(() => {
@@ -125,6 +129,16 @@ export default function MascotSetupScreen() {
   useEffect(() => {
     setIsAdvancing(false);
   }, [step]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextState) => {
+      appState.current = nextState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const clearProgressTimer = () => {
     if (progressTimer.current) {
@@ -156,8 +170,8 @@ export default function MascotSetupScreen() {
 
     clearProgressTimer();
     progressTimer.current = setInterval(() => {
-      setProgress((prev) => Math.min(prev + 7, 90));
-    }, 1500);
+      setProgress((prev) => Math.min(prev + 1, 90));
+    }, 2000);
 
     try {
       await completeMascotOnboarding(userUuid, {
@@ -174,6 +188,21 @@ export default function MascotSetupScreen() {
 
       clearProgressTimer();
       setProgress(100);
+
+      if (appState.current !== "active") {
+        try {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: "マスコットが完成しました",
+              body: "アプリを開いて新しいマスコットを確認しましょう。",
+              data: { type: "mascot-ready" },
+            },
+            trigger: null,
+          });
+        } catch (notificationError) {
+          console.log("Failed to schedule mascot notification", notificationError);
+        }
+      }
 
       setTimeout(() => {
         router.replace("/(tabs)");
@@ -223,7 +252,8 @@ export default function MascotSetupScreen() {
                 lineHeight: 20,
               }}
             >
-              15〜30秒ほどで完成します。少しだけ待ってください。
+              3〜5分ほどで完成します。アプリを閉じても大丈夫です。
+              完了したら通知でお知らせします。
             </Text>
 
             <View
