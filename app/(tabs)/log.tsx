@@ -257,6 +257,18 @@ export default function LogScreen() {
 
         {!isLoadingEncounters && encounters.length > 0 && (
           <View style={logStyles.encounterList}>
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: '600',
+                color: '#9CA986',
+                fontFamily: Fonts.rounded,
+                letterSpacing: 0.3,
+                marginBottom: -2,
+              }}
+            >
+              今日すれ違った仲間
+            </Text>
             {encounters.map((encounter) => (
               <EncounterRow
                 key={encounter.id}
