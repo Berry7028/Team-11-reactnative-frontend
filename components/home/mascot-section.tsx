@@ -120,7 +120,7 @@ export function MascotSection({ mascot, isLoading, imageUrls }: MascotSectionPro
             overflow: "hidden",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "rgba(255,255,255,0.25)",
+            backgroundColor: "#FFFFFF",
             borderWidth: 2,
             borderColor: "rgba(0,0,0,0.7)",
             boxShadow: "0 0 64px rgba(255,255,255,0.55)",
@@ -133,7 +133,7 @@ export function MascotSection({ mascot, isLoading, imageUrls }: MascotSectionPro
           <Image
             source={imageSource}
             contentFit="cover"
-            style={{ width: 220, height: 220, borderRadius: 999 }}
+            style={{ width: 220, height: 160 }}
           />
           <View
             pointerEvents="none"
